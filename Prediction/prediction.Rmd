@@ -1,0 +1,187 @@
+---
+title: "Weather Prediction"
+output: 
+  html_document:
+    code_folding: hide
+    theme: cerulean
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+library(readr)
+library(tidyverse)
+library(pander)
+library(DT)
+library(mosaic)
+weather <- library(readr)
+weather <- read_csv("weather.csv")
+weatherO <- read_csv("weatherOriginal.csv")
+
+
+```
+
+### Background
+
+<br> 
+For this simple linear model I chose to do some research on the
+past 30 January 22nd's and get their high temperatures and record them
+in excel. This means all these data points we have are actually january
+22nd's from 1999 for example, or 2008.I used past years as my X value
+for my linear model.
+
+In other words I used past years' high temperatures on the same date
+that I'm trying to predict in order to get this year's high temperature
+for the same date.
+
+This analysis will be based on a simple linear regression model
+explained by:
+
+$$
+  \underbrace{\hat{Y}_i}_\text{Some Label} = \overbrace{b_0}^\text{est. y-int} + \overbrace{b_1}^\text{est. slope} \underbrace{X_i}_\text{Some Label}
+$$ Where Y hat will be my prediction, b0 my Y intercept and b1 my slope.
+As well as xi being the year I'm trying to predict for.
+
+<br> <br>
+
+##  {.tabset}
+
+### Linear Model Graph
+
+<br> 
+The data which I worked with is visible below as a plotted graph.
+Take a look at it to have a better idea on how these past high
+temperatures behaved in previous years. Spoiler alert, my predicted
+weather is shown as a red dot in the plot, try to guess the exact
+rounded Predicted Temperature, I will reveal it at the end of the
+analysis. 
+<br> <br>
+
+```{r pressure, echo=FALSE}
+weatherLm <- lm(High~Year,data=weather)
+PredictedWeather <- predict(weatherLm, data.frame(Year=26))
+
+ggplot(data=weather,mapping=aes(x=Year,y=High, col=High))+
+  geom_point()+
+  geom_smooth(method = "lm", formula=y~x, se=FALSE, col="black")+
+  geom_point(data=data.frame(Year=26, High=PredictedWeather), aes(x=Year, y=High), color="red", size=3) +
+  labs(
+    x="Year from 1998 to 2023",
+    y="High temperature in Fahrenheit",
+    title="All January 22nd High Temperatures for the past 25 years",
+    col="Temperature")+
+  theme_bw()
+```
+
+<br> <br>
+
+**Y hat Model Equation:** Y hat = 30.44 + -0.08 \* Year <br> **Slope:**
+For each additional year, the high temperature is expected to change by
+-0.08 degrees Fahrenheit.
+
+As you can see, even though the observations are a little scattered
+around the graph, we still found an interesting linear model. There's a
+very small slope, indicating that through the pass of time, temperatures
+in Jan 22nd have been falling a little each year. 
+<br> <br>
+
+### Data Used
+
+<br> 
+Here is the table of the high temperatures used and the years. The
+years in the table being **year 1 = 1994** all the way to **year 30 =
+2023.** 
+<br>
+
+```{r, echo=FALSE}
+datatable(weatherO)
+```
+
+<br> <br>
+
+## Measures of tendency
+
+<br> Originally I had 30 years in my data points and I ended up with 25
+by taking outliers. The process to do this was as follows. I took a
+range based on the average temperature of the table and
+Adding/Subtracting the sample standard deviation to it. The interval to
+take in consideration ranged between **20 to 34 Fahrenheit** using the
+**7.5 degrees standard deviation.**
+<br> <br>
+
+```{r, echo=FALSE}
+fav_stats(weatherO$High) %>% 
+  pander()
+```
+
+<br> <br>
+
+## Linear Model Summary and fit {.tabset}
+
+<br>
+
+### Summary
+
+<br> 
+After doing this, I took out the outliers from my data set to
+get a better fit. I got a small difference, temperature was hard to
+measure even in the same day in different years. Take a look at my
+linear model summary below. <br> <br>
+
+```{r cars, echo=FALSE}
+summary(weatherLm) %>% 
+  pander()
+
+```
+
+<br> <br>
+
+### Diagnostic Plots
+
+<br> <br>
+
+```{r}
+par(mfrow=c(1,3))
+plot(weatherLm,which=1:2)
+plot(weatherLm$residuals)
+```
+
+<br> <br>
+
+In my opinion, diagnostic plots look good, the problem is probably in
+the normality plot. There might be troubles in normality making the
+model not a good fit for it's purpose.
+
+<br> <br>
+
+## Prediction
+
+<br> 
+Now to use this linear model with a predictive purpose I set the
+**prediction to year "26"** which in the terms of this table would
+**mean year 2024** because it's the next in line due to year "25" being
+2023.
+
+After running the prediction we get the so awaited prediction for High
+Temperature in Monday Jan/22/2024 as a range. 
+<br> <br>
+
+```{r, results='asis', echo=FALSE}
+stdev<-sd(weatherO$High)
+Interval_Predicted<- c((28-7.45),(28+7.45))
+Combined <- cbind(PredictedWeather, stdev, Interval_Predicted)
+pander(Combined, caption = "Prediction for Monday 22nd in Farenheit")
+```
+
+<br> <br>
+
+## Conclusion
+
+<br> After all the analysis we can conclude that a **High temperature
+between 21 and 36 (Rounded) is expected.** This analysis is for scholar
+purposes only and only works on January 22nd's, a more advanced model
+would require live data Queries to make it work for any day.
+Disregarding all this, let's wait for Monday to see if it worked :)
+
+<br> <br>

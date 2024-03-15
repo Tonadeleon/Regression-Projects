@@ -1,0 +1,554 @@
+---
+title: " "
+output:
+  html_document:
+    code_folding: hide
+    theme: cerulean
+    keep_md: true
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+### **This is why I'll Keep my Midterm Grade!**
+
+```{r message=FALSE}
+
+library(tidyverse)
+library(DT)
+library(pander)
+library(ggrepel)
+library(mosaic)
+
+```
+
+```{r message=FALSE}
+
+datt <- read_csv("Math425PastGrades.csv")
+
+dat1 <- datt %>% 
+  
+  mutate(attend = ifelse(AttendedAlmostAlways == "Y", 1, 0)) %>% 
+  
+  mutate(offih = ifelse(SpentTimeInOfficeHours == "Y", 1, 0)) %>% 
+  
+  mutate(perfclass = ifelse(ClassActivitiesCompletedPerfectly == "Y", 1, 0)) %>% 
+  
+  mutate(perfskill = ifelse(SkillsQuizzesCompletedPerfectly == "Y", 1, 0)) %>% 
+  
+  rename(
+    
+    "weath" = Analysis_PredWeather, 
+    
+    "resd" = Theory_Residuals,
+    
+    "carp" = Analysis_CarPrices, 
+    
+    "dists" = Theory_SamplingDists, 
+    
+    "skill" = SkillsQuizzes, 
+    
+    "assess" = AssessmentQuizzes) %>% 
+  
+   select(FinalExam, Midterm, weath, resd, carp, dists, skill, assess, attend, offih, perfclass, perfskill, MagicTwoGroups) %>% 
+  
+  mutate(assessg = ifelse(assess > 50, 1, 0)) %>% 
+  
+  mutate(all = rowSums(select(., c(attend, offih, perfclass, perfskill, assessg)))) %>% 
+  
+  #mutate(all_group = cut(all, breaks = c(-Inf, 1, 3, 5), labels = c(1, 2, 3))) %>% 
+  
+  filter(all %in% c(0,1,4,5)) %>% 
+    
+  mutate(allg = ifelse(all > 3, 1, 0)) 
+  
+  # drop_na() %>% 
+  # 
+  # 
+  # filter(FinalExam != 0) %>% 
+  # 
+  # filter(Midterm > 40) %>%
+  # 
+  dat <- dat1 %>% 
+    filter(row_number() != 45 & row_number() != 52 & row_number() != 30)
+
+```
+
+```{r include=FALSE}
+#perfclass perfskill offih mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + perfclass + perfclass:I(Midterm) + perfclass:I(Midterm^2) + perfskill + perfskill:I(Midterm) + perfskill:I(Midterm^2) + offih + offih:I(Midterm) + offih:I(Midterm^2) + perfskill:offih + perfclass+offih + perfskill:perfclass, data = dat)
+#perfclass perfskill mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + perfclass + perfclass:I(Midterm) + perfclass:I(Midterm^2) + perfskill + perfskill:I(Midterm) + perfskill:I(Midterm^2) + perfskill:perfclass, data = dat)
+mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + I(Midterm^3)  + I(Midterm^4) + allg + allg:I(Midterm) + allg:I(Midterm^2) + allg:I(Midterm^3) + allg:I(Midterm^4), data = dat)
+b <- coef(mylm)
+
+#predict(mylm, data.frame(Midterm=88, perfclass = 1, perfskill = 1, offih=1, assessg=1, skill = 100, attend=1, allg=1), data=dat)
+
+#predict(mylm, data.frame(Midterm = 88, allg=0), interval="confidence")
+
+```
+## {.tabset .tabset-pills .tabset-fade}
+
+### Regression Model and Prediction
+
+<br><br>
+
+```{r warning=FALSE, fig.align='center'}
+##almost there, need filter for 0, and lm 3
+
+prediction_interval <- predict(mylm, newdata = data.frame(Midterm = 90, allg = 1), interval = "predict")
+
+LCL <- prediction_interval[2]
+UCL <- prediction_interval[3]
+Pred <- prediction_interval[1]
+
+CI <- data.frame(
+  lower_bound = LCL,
+  upper_bound = UCL,
+  midpoint = Pred
+)
+
+ggplot(dat, aes(Midterm, FinalExam, col=as.factor(allg)))+
+  geom_point()+
+  #geom_smooth()+
+  
+  
+  stat_function(fun = function(x) 
+    
+    ( b[1] ) +
+      
+    ( b[2] ) * x + 
+      
+    ( b[3] ) * x^2 + 
+
+    ( b[4] ) * x^3 + 
+      
+    ( b[5] ) * x^4, 
+    
+    color = "orange",
+    
+    size=1) + # Line for class == 0
+  
+  stat_function(fun = function(x) 
+    
+    ( b[1] + b[6] ) + 
+      
+    ( b[2] + b[7] ) * x + 
+      
+    ( b[3] + b[8]) * x^2 +
+      
+    ( b[4] + b[9]) * x^3 + 
+      
+    ( b[5] + b[10]) * x^4,
+    
+    color = "skyblue",
+    
+    size=1) + # Line for am == 1
+  
+  geom_segment(aes(x = 90, xend = 90, y = LCL, yend = UCL), color = "steelblue4", size = 1.5) +
+  
+  geom_label_repel(data = CI, aes(x = 90, y = UCL, label = paste("Prediction UCL:", round(UCL, 2))), color = "black", 
+                   nudge_x = 12, nudge_y = 10, size = 2.5)+
+  
+  geom_label_repel(data = CI, aes(x = 90, y = Pred, label = paste("Predicted Final:", round(Pred, 2))), color = "black", 
+                   nudge_x = 17, nudge_y = 0, size = 2.5)+
+  
+  geom_label_repel(data = CI, aes(x = 90, y = LCL, label = paste("Prediction LCL:", round(LCL, 2))), color = "black", 
+                   nudge_x = 10, nudge_y = -10, size = 2.5)+
+  
+  geom_point(CI, mapping=aes(x=90, y=Pred), col="red", size=2.5)+
+  
+  scale_y_continuous(
+    breaks = seq(0, 100, by = 25),
+    labels = c(0,25,50,75,100))+
+  
+  
+  labs(
+    title = "My Final Exam Prediction",
+    y="Final Exam Grade",
+    x="Midterm Grade",
+    col="Dedication Groups")+
+  
+  theme_minimal()+
+  
+  theme(
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 10),
+    plot.title = element_text(hjust = .5),
+    legend.position = "bottom"
+  ) +
+  scale_color_discrete(
+    labels = c("Not Dedicated", "Dedicated")
+  )
+  #facet_wrap(~perfclass)
+
+```
+
+<br><br>
+
+$$
+\hat{y} = b_0 + b_1x_1 + b_2x_1^2 + b_3x_1^3 + b_4x_1^4 + b_5(x_1)x_2 + b_6(x_1^2)x_2 + b_7(x_1^3)x_2 + b_8(x_1^4)x_2 \\ ~ \\ where \\~\\  \underbrace{\hat{y}}_{\text{Final Exam Grade}} \quad \ \underbrace{x_1}_{\text{Midterm Grade}} \quad \ \underbrace{x_2}_{\text{Dedication Group}}
+$$
+<br>
+
+This analysis will use the statements above and try and find a true prediction model for Final Exam Grades (response variable) by using Midterm Grade as an explanatory variable, and the count of the completed requirements for students as a secondary factor (If they got 100% in skills quizzes and attended almost always they have a 2 out of 5 for example).
+
+I used the interactions of these two variables to form 2 regression models, In orange we see those who had less than 3 assignments done, and in blue wee see those who had more than 2 assignments done.
+
+As you can see most of the ones who constantly keep on doing their tasks are on the upper half of the distribution taken as by the Y axis. While some of the orange group (those who weren't as dedicated) are in the lower half. It's important to know that these groups share some areas, however no orange dot went over 85 in their Final. I consider myself a blue group and throughout this analysis I'll use my Midterm grade (90) to predict my final exam grade. Eventually you'll see why I'll keep my midterm grade.
+
+But first things first. Let's analyze some of the aspects of our data frame. Take a look at the statistics of this sample
+
+<br>
+
+```{r}
+finalfav <- favstats(~ FinalExam, data = dat, digits = 2)
+
+midfav <- favstats(~ Midterm, data = dat, digits = 2)
+
+
+cap <- "Summary statistics for the Final Exams"
+cap1 <- "Summary statistics for the Midterms"
+
+pander(finalfav, caption = cap)
+
+pander(midfav, caption = cap1)
+
+```
+
+<br>
+
+Some interesting observations from these statistics are that the median for both of them are a little similar, I think this also depicts the correlation between them. Also an interesting point is that no one who got a 100 in the Midterm has had 100 in the Final. It's just interesting because this says huge grades in the Midterm don't necessarily get you 100 in the final. It does mean that your chances are higher to get better grades, but if you were to stop working in your assignments then your grade can drop as low as 20.
+
+So, the Midterm is not the only variable to take in consideration. Knowing this, let's jump in the summary of my regression model and my prediction with my actual Midterm grade and group.
+ 
+<br><br>
+ 
+#### Summary and Prediction
+
+<br><br>
+
+```{r}
+pander(summary(mylm), caption="MY Linear Model Summary")
+```
+
+<br><br>
+
+Take a look at my lm summary. Interesting to note that my R^2^ is only explaining about 75% of the variability in my observations. Making some research I saw that for real life data even low R^2^ are considered good as long as your X variable is helping you predict (with sense) your Y variable. (See Appendix as to why I continued with this model).
+
+Considering that this linear model might help us learn more about the true parameters (if any) of this regression; we will go ahead and predict what my own Final Exam grade would be.
+As for me, these were my variables:
+
+<br><br>
+
+$$
+\underbrace{\hat{y}}_{\text{Final Exam Grade}} \quad \ \underbrace{90}_{\text{Midterm Grade}} \quad \ \underbrace{1}_{\text{Dedication Group}}
+$$
+
+<br><br>
+
+```{r}
+prediction_interval1 <- predict(mylm, newdata = data.frame(Midterm = 90, allg = 1), interval = "predict")
+prediction_interval2 <- predict(mylm, newdata = data.frame(Midterm = 90, allg = 0), interval = "predict")
+```
+
+When applying this formula into my prediction equation we can see that I get a prediction interval ranging from 61 to 115 With an actual predicted value of 88
+
+Now if I were to fall under dedication group two (orange line), even with a grade within the higher quantiles in this class. This is how my grades would look like: 14 - 43.8 - 73.7
+
+We can see that dedication, as a variable in life, is not only a factor for inspiring quotes or amazing works; dedication can be an actual proven factor of success as seen by the difference in the range of grades I could fall to if I stopped being dedicated. It's my choice how dedicated I'm going to be in the future, and my prediciton is considering I'll perform as usual in this class in the future.
+
+<br><br>
+
+#### Conclusion
+
+<br><br>
+To me, this analysis helps me be more confident in my decision of keeping my midterm. Because even though I do not know yet my final place in either of the dedication groups, I know I will continue my current work pace for this class as usual. Which means the predictions for my finals will be based on my first prediction interval (61  - 115, 115 meaning 100 of course). Even if I had had a low Midterm grade and I had dedicate myself after that until the end of the course, I could have been one of those orange outlier dots in the higher percentiles of the class; even then I would be in a higher quantile for this class' final exam grade, and then my grades for both of my exams would've averaged with their respective weights (which would be good).
+
+This analysis helps us see what our future grade could look like if we decide on what group we can fall in. In the end it is our choice how much we will invest into this class, thus bringing us closer to higher grades or lower grades. 
+To conclude, I'll explain why I'll keep my midterm. I'll do it because it will give a more assured final exam grade when it averages with my midterm grade for my actual 30%, being that I have good chances of good grades I like those odds. However, even though I have a 100 final grade in my prediction interval, I also have a 61 possible, which wouldn't be horrible (I know I can do more), but to play it safe I will keep my midterm and have it offer its portion to my overall class grade.
+<br><br>
+
+### Diagnostic Plots
+
+<br><br>
+
+```{r}
+mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + I(Midterm^3)  + I(Midterm^4) + allg + allg:I(Midterm) + allg:I(Midterm^2) + allg:I(Midterm^3) + allg:I(Midterm^4), data = dat)
+
+par(mfrow=c(1,3))
+plot(mylm, which=1:2)
+plot(mylm$residuals)
+
+```
+
+<br><br>
+
+In my opinion everything looks good here with the diagnostic plots. We can see that only linearity is a little off place, but not by much; this is not enough to throw this analysis off. So, this gives confidence to proceed with this model.
+
+Just as an interesting fact, take a look at my diagnostic plots before I took out observation 45. See how normality was being violated (in my opinion) and also variance didn't look so good. Then it got corrected as stated above.
+
+```{r}
+mylm1 <- lm(FinalExam ~ Midterm + I(Midterm^2) + I(Midterm^3)  + I(Midterm^4) + allg + allg:I(Midterm) + allg:I(Midterm^2) + allg:I(Midterm^3) + allg:I(Midterm^4), data = dat1)
+
+par(mfrow=c(1,3))
+plot(mylm1, which=1:2)
+plot(mylm1$residuals)
+```
+
+
+### Data Translation to Numeric
+
+<br><br>
+
+#### Original data
+
+This is my original data set. First I downloaded the CSV given by Br. Saunders. I took a while analyzing how I could work with this data set, then I figured It'd be a good idea to have all numeric values so I could use pairs() function. (Now I know that I can use as.factor, however I like it like this as well.)
+
+<br><br>
+
+```{r}
+datatable(datt)
+```
+
+<br><br>
+
+#### Numeric and clean data
+
+I proceeded to transoform all the Yes or No answers into on or off switches (0,1). I added a column (assesg) in where I separated all the people with assessments grades above 50 and below 50. Above being 1 (on) and below being 2 (off).
+
+Then I added two more columns (all, and allg), one counting all the 1s that one person had (0 min - 5 max), meaning that 0 is a not at all dedicated person, this person missed classess, missed class activities, missed assessment quizzes, missed skill quizzes, and didn't go to office hours. While 5 means they did all the stated; My second column was an on off switch type of column, where 0 includes those whose counts were 0-2, and 1 means those who had at least 3 (3 to 5) of these factors completed.  
+
+<br><br>
+
+```{r, fig.align='center'}
+datatable(dat)
+```
+
+<br><br>
+
+### Appendix
+
+<br><br>
+
+#### {.tabset .tabset-panel}
+
+##### Final geom_smooth
+
+```{r, echo=F, warning=F, fig.align='center'}
+
+
+ggplot(dat, aes(Midterm, FinalExam, col=as.factor(allg)))+
+  geom_point()+
+  geom_smooth()+
+  
+  
+  stat_function(fun = function(x) 
+    
+    ( b[1] ) +
+      
+    ( b[2] ) * x + 
+      
+    ( b[3] ) * x^2 + 
+
+    ( b[4] ) * x^3 + 
+      
+    ( b[5] ) * x^4, 
+    
+    color = "orange",
+    
+    size=1.2,
+    
+    linetype = "dotted") + # Line for class == 0
+  
+  stat_function(fun = function(x) 
+    
+    ( b[1] + b[6] ) + 
+      
+    ( b[2] + b[7] ) * x + 
+      
+    ( b[3] + b[8]) * x^2 +
+      
+    ( b[4] + b[9]) * x^3 + 
+      
+    ( b[5] + b[10]) * x^4,
+    
+    color = "skyblue",
+    
+    size=1.2,
+    
+    linetype = "dotted") + # Line for am == 1
+  
+  ylim(0,100)+
+  
+  
+  labs(
+    title = "My Final Exam Prediction",
+    y="Final Exam Grade",
+    x="Midterm Grade",
+    col="Dedication Groups")+
+  
+  theme_minimal()+
+  
+  theme(
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 10),
+    plot.title = element_text(hjust = .5),
+    legend.position = "bottom"
+  ) +
+  scale_color_discrete(
+    labels = c("Not Dedicated", "Dedicated")
+  )
+  #facet_wrap(~perfclass)
+
+```
+
+<br><br>
+
+##### Pairs
+
+```{r, fig.align='center', fig.width=10, fig.height=10}
+pairs(dat, panel = panel.smooth, col=as.factor(dat$allg))
+```
+
+<br><br>
+
+##### My Test Lm's
+
+```{r, warning=FALSE}
+#perfclass perfskill offih mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + perfclass + perfclass:I(Midterm) + perfclass:I(Midterm^2) + perfskill + perfskill:I(Midterm) + perfskill:I(Midterm^2) + offih + offih:I(Midterm) + offih:I(Midterm^2) + perfskill:offih + perfclass+offih + perfskill:perfclass, data = dat)
+#perfclass perfskill mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + perfclass + perfclass:I(Midterm) + perfclass:I(Midterm^2) + perfskill + perfskill:I(Midterm) + perfskill:I(Midterm^2) + perfskill:perfclass, data = dat)
+mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + perfclass:I(Midterm) + perfclass:I(Midterm^2) + assess + skill, data = dat)
+b <- coef(mylm)
+
+summary(mylm)
+
+```
+
+```{r, warning=FALSE, fig.align='center'}
+##almost there, need filter for 0, and lm 3
+
+ggplot(dat, aes(Midterm, FinalExam, col=as.factor(perfclass)))+
+  geom_point()+
+  #geom_smooth()+
+  stat_function(fun = function(x) (b[1]) +( b[2] + b[4] + b[5]) * x + (b[3]) * x^2, color = "skyblue") + # Line for class == 0
+  stat_function(fun = function(x) (b[1]) + (b[2] + b[6]) * x + (b[3] + b[7]) * x^2, color = "orange") + # Line for am == 1
+  labs(title = "Example Using Perfect Class Activities As A Factor")
+#facet_wrap(~perfclass)
+```
+
+<br><br>
+
+##### Facet Wrap
+
+```{r, warning=FALSE, fig.align='center'}
+##almost there, need filter for 0, and lm 3
+
+# prediction_interval <- predict(mylm, newdata = data.frame(Midterm = 88, allg = 1), interval = "confidence")
+# 
+# 
+# 
+# LCL <- prediction_interval[2]
+# UCL <- prediction_interval[3]
+# Pred <- prediction_interval[1]
+# 
+# CI <- data.frame(
+#   lower_bound = LCL,
+#   upper_bound = UCL,
+#   midpoint = Pred
+# )
+
+ggplot(dat, aes(Midterm, FinalExam, col=as.factor(allg)))+
+  geom_point()+
+  geom_smooth()+
+  
+  
+#  stat_function(fun = function(x) 
+    
+ #   ( b[1] ) +
+      
+  #  ( b[2] ) * x + 
+      
+   # ( b[3] ) * x^2 + 
+
+    #( b[4] ) * x^3 + 
+      
+    #( b[5] ) * x^4, 
+    
+    #color = "orange",
+    
+    #size=1) + # Line for class == 0
+  
+#  stat_function(fun = function(x) 
+    
+ #   ( b[1] + b[6] ) + 
+      
+  #  ( b[2] + b[7] ) * x + 
+      
+   # ( b[3] + b[8]) * x^2 +
+      
+    #( b[4] + b[9]) * x^3 + 
+      
+    #( b[5] + b[10]) * x^4,
+    
+    #color = "skyblue",
+    
+    #size=1) + # Line for am == 1
+  
+  #geom_segment(aes(x = 88, xend = 88, y = LCL, yend = UCL), color = "steelblue4", size = 1.5) +
+  
+  #geom_point(CI, mapping=aes(x=88, y=Pred), col="red", size=2.5)+
+  
+  ylim(-5,100)+
+  
+  labs(
+    title = "My Final Exam Prediction",
+    y="Final Exam Grade",
+    x="Midterm Grade",
+    col="Dedication Groups")+
+  
+  theme_minimal()+
+  
+  theme(
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 10),
+    plot.title = element_text(hjust = .5),
+    legend.position = "bottom"
+  ) +
+  scale_color_discrete(
+    labels = c("Not Dedicated", "Dedicated")
+  )+
+  facet_wrap(~allg)
+```
+
+<br><br>
+
+####
+
+In this section I'll explain why I did this linear model the way I did. Take a look at the above graph in which I transposed my model to a LOESS curve for both dedication groups. I liked how they very much match, that gave me confidence to take this as my final model. Now, for the actual steps I took.
+
+In the beginning I analyzed my data with a pairs plot (see pairs tab, that was my first pairs plot). I got that plot with the original data brother Saunders gave us. I saw much correlation between some variables, specially the perfect in class activities group so I started with that one as a factor. See my plot in test lms tab (second plot).
+
+After figuring out what variables I wanted in my first model, I started building some Lm's. Check out one of my first examples in test lms tab. In that example I would've loved to see the blue line a little higher. And also some of my interactions weren't significant in their p-values. Also in my code you can see as comments some other models I tried and many others are not there because I deleted them as well.
+
+I did some linear models including everything (the yes or no as switches), however even though my R^2^ was literally .99, the predictions were so off that I didn't go through with that idea.Since I was finding too many variables and my predictions where going off when I tried using them all, I chose to make a new variable in which I summed the count of 1s each student had. Meaning that students that had perfect quizzes and perfect attendance had 2 out of 5, and then I made that a on off switch. Those whose counts were below 3 were a 0 and those above 2 were a 1, That's how the "dedication groups" were formed. This idea was inspired by heaven in my opinion, because at this time I already had spent many hours trying to make something work. So I took action and I added them all as a count of how many perfect scores or complete assignments each student had. This trying to find the level of dedication for each student. 
+
+Honestly I felt like doing a third group, which I really think could've added more insight, and add more R^2^ to my prediction and significance, but I was very tired; I would've called this group the average, and I could've add another stat function in the graph. The groups would've been as followed 0-1 count = "Not dedicated", 2-3 count = "average", 4-5 = "dedicated", This would make sense because in the actual model I currently have, both dedication groups share an area in their models, so the average would go through the middle and take that area. However, in the end I figured two groups is ok.
+
+I used those variables to start building my model and tried plotting these variables in facet wrap with a geom_smooth and divided by group (Also in the Facet Wrap tab). This was the beginning of my final model. I saw a quadratic or even cubic model fitting both of them, so that's what I tried doing for both on and off in the dedication groups by using x as my midterm grade.
+
+In the end I think that this one (even though it doesn't contain all possibilities) works well enough for this matter. I was pleased to see I was able to finish up doing something with all significant p values.
+
+<br>
+
+```{r}
+
+mylm <- lm(FinalExam ~ Midterm + I(Midterm^2) + I(Midterm^3)  + I(Midterm^4) + allg + allg:I(Midterm) + allg:I(Midterm^2) + allg:I(Midterm^3) + allg:I(Midterm^4), data = dat)
+summary(mylm)
+```
+
+<br><br>

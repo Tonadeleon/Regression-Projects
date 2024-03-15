@@ -1,0 +1,1 @@
+This is a compilation of my most recent workswith regression models. Feel free to check out my md files, as they allow you to see my code and visualizations while glimpsing at my analyses. If you are curious to see the actual HTML format which is way better, feel free to reach out!

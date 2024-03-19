@@ -1,5 +1,6 @@
 ---
 title: "Sampling Distributions Unveiled"
+author: "Tonatiuh De Leon"
 output: 
   html_document:
     code_folding: hide

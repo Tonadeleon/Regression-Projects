@@ -2,12 +2,11 @@
 title: " "
 output: 
   html_document:
-    code_folding: hide
     theme: cerulean
+    code_folding: hide
     keep_md: true
 editor_options: 
-  markdown: 
-    wrap: 72
+  chunk_output_type: console
 ---
 
 ### **Introduction to Residuals and the Least Squares Method**
@@ -336,29 +335,27 @@ mean that your model will work perfectly all the time. <br> <br>
 <br>
 
 ```{r, fig.align='center'}
-SSE2 <- sum((weather$High-weatherLm$fit)^2)
-average_square <- SSE2 / ((length(weather$High))-2)
-side_length <- sqrt(17.95)
 
-square_data <- data.frame(
-  xmin = 0,
-  xmax = side_length,
-  ymin = 0,
-  ymax = side_length
-)
-
-ggplot(square_data, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill="17.95")) +
-  geom_rect()+
-  
+ggplot(data = weather, aes(Year, High, col = High)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, col = "black") +
+  geom_rect(aes(xmin = 12.5, xmax = 6.95, ymin = 29.41, ymax = 21, fill = "= 17.95"), alpha = 0.5) +
   labs(
-    x = "",
-    y = "",
-    title = "The Average of all squares in my model",
-    fill = "Avg Square"  ) +
-  theme_bw()+
-  xlim(0, 4.5) +
-  ylim(0, 4.5) +
-  coord_fixed(ratio = 1)
+    x = "Year from 1998 to 2023",
+    y = "High temperature in Fahrenheit",
+    title = "This is how the MSE would look like in the model",
+    subtitle = "This is the average of all the least squares",
+    col = "Temperature",
+    fill = "Avg Square"
+  ) +
+  theme_bw() +
+  theme(
+    legend.title = element_text(size = 7),
+    legend.text = element_text(size = 5),
+    legend.key.width = unit(.5, "cm"),
+    plot.subtitle = element_text(colour = "grey50")
+  )
+
 ```
 
 **The Mean squared error (MSE)** is basically an average of all the

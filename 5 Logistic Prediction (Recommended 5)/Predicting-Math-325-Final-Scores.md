@@ -10,6 +10,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+<br>
+
+[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://papaya-semolina-8e58ef.netlify.app/)
+
+<br> 
+ 
 
 
 

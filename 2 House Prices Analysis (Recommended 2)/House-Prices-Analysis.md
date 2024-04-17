@@ -10,6 +10,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+<br>
+
+[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://gentle-meringue-8bb3f3.netlify.app/)
+
+<br> 
+
 
 
 

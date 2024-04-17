@@ -9,6 +9,12 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
+
+<br>
+
+[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://incomparable-kringle-69dff2.netlify.app/)
+
+<br> 
  
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)

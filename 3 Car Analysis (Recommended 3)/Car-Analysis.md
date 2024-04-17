@@ -13,7 +13,7 @@ editor_options:
 
 <br>
 
-[<span style="font-size: larger;">CLICK HERE TO SEE HTML VERSION (Better Format)</span>](https://zesty-kheer-8ce4a9.netlify.app/)
+[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://zesty-kheer-8ce4a9.netlify.app/)
 
 <br> 
 This analysis will use a linear model to predict the selling price for my vehicle when it reaches 220,000 miles.This is assuming every year I’ve been using it for 20\~25 thousand miles. To know what price do I see myself selling it at, I'm going to use the linear model formula. After performing the regression model, we'll analyze it to see if it can be trusted or not.

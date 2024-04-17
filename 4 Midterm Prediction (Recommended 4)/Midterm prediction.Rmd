@@ -9,6 +9,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+<br>
+
+[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://polite-kringle-2be27c.netlify.app/)
+
+<br> 
+ 
 ### **This is why I'll Keep my Midterm Grade!**
 
 ```{r , message=FALSE, warning=FALSE, echo=FALSE}

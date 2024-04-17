@@ -1,9 +1,7 @@
-This is a compilation of my most recent works with regression models. 
+******Click on the link at the top of each .md file to see the Rendered HTML Version of each analysis.******
 
-Each folder has two main Files: 
-A file with a link to the analysis online and MD files to see in Github.
-For a better experience Feel free to check out the online versions, click in the links (Better Formatting).
-My md files, will allow you to glimpse at my analyses, but the rendering is not that good (Looks funky).
+This is a compilation of my most recent works with regression models. <br>
+Each folder has one .md File which. These ones will allow you to glimpse at my analyses. The rendering is not that good (Looks funky). That's why you should check out their rendered versions (Link on each file).
 
 Here is a summary of each one of the analyses posted in this repo:
 
@@ -33,4 +31,4 @@ Here is a summary of each one of the analyses posted in this repo:
         School Project. First dummy regression project. Teacher designed this assignment to be a failed regression model in order to teach             main principles. Model is later used in Theory assignment to look for key aspects on getting a better regression model.
 
 
-All of these projects are of my own making. I wrote every insight and line of code in RStudio. If you feel like wanting to see HTML version (Way better format) feel free to reach out!
+All of these projects are of my own making. I wrote every insight and line of code in RStudio. 

@@ -218,6 +218,10 @@ ggplot(dt, aes(y=(daily1), x=(monthly_listeners)))+
 ```
 
 <br>
+
+$$ \text{Math equation:} \\\ \\  \text{Artist Daily Streams} = \text{Monthly followers} + \text{Explicit} + \text{Artist streams} + \text{All time streams per song} + \text{Daily song streams} $$
+
+<br>
  
 This analysis explains the relationship between daily streams an artist can have on Spotify; Because Spotify does not share all their information to public, only some variables were available to perform a regression model on this data. This is why more research was needed in order to find variables. By looking up related Spotify data I came across with data that not only had information on how the song was made (duration, decibel levels, etc..), but it also had Monthly followers for more than 3000 artists as well as daily streamings, and other interesting variables.(See model selection tab) 
 
@@ -1228,10 +1232,6 @@ Validations look decent in this model. Only problem I see is that the validation
 ####
  
 ## Model Summary
-
-<br>
-
-$$ \text{Math equation and model summary:} \\\ \\  \text{Artist Daily Streams} = \text{Monthly followers} + \text{Explicit} + \text{Artist streams} + \text{All time streams per song} + \text{Daily song streams} $$
 
 <br>
  

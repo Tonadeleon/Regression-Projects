@@ -5,11 +5,12 @@ output:
   html_document:
     theme: default
     code_folding: hide
+    keep_md: true
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
  
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 #library(devtools)
 #library('spotifyr')
@@ -25,7 +26,7 @@ library(formattable)
 library(DT)
 ```
  
-```{r  current model}
+```{r  current model, message=FALSE, warning=FALSE, echo=FALSE}
  
 Sys.setenv(SPOTIFY_CLIENT_ID = '857bab10601a4bc2af19d359336d3af7')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = 'f36a14960bc445fba551b36f3b65cd65')
@@ -172,7 +173,7 @@ b <-(coef(mylm))
  
 <br>
  
-```{r graphs actual, fig.width=10, fig.width=10, fig.align='center'}
+```{r graphs actual, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 
  
 ggplot(dt, aes(y=(daily1), x=(monthly_listeners)))+
@@ -248,7 +249,7 @@ To start the hypothesis testing, a corresponding T value  is needed for the comp
  
 <br>
  
-```{r hypothesis testing 1}
+```{r hypothesis testing 1, message=FALSE, warning=FALSE, echo=FALSE}
 tvalue <- ((b[3]) - 0)/(0.03272)
 result <- data.frame(a = round(pt(-abs(tvalue), 876 ) * 2, 5), row.names = NULL)
 kable(result, align = "c", col.names = 'P. Value when 0 streams increase per new monthly follower is the null ')
@@ -268,7 +269,7 @@ Keep on reading to see more on how the data was worked up in order to get to the
  
 <br>
  
-```{r graphs simple, fig.width=10, fig.width=10, fig.align='center'}
+```{r graphs simple, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
  
 ggplot(dt, aes(y=(daily1), x=(monthly_listeners)))+
   geom_point(show.legend = F, col="orange")+
@@ -377,7 +378,7 @@ Originally, not many correlations were visible. A little on daily and monthly_li
 
 <br>
 
-```{r original pairs plot, fig.width=20, fig.height= 20, fig.align='center'}
+```{r original pairs plot, fig.width=20, fig.height= 20, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 dto <- inner_join(dta, df, by = c("title", "artist"), relationship = "many-to-many") |> 
   mutate(explicit = as.factor(explicit),
          track_genre = as.factor(track_genre)) |> 
@@ -395,7 +396,7 @@ pairs(dto, panel=panel.smooth)
 
 After wrangling the data, and creating new variables such as current_trend, peaked_last_year and others in where I create some on-off switches, as well as multiple categorical variables I got many good insights as to what to do next. This pairs plot helped me view the correlation between daily1 and monthly_listeners and that got me my first raw R^2^ of around .7 Then I tried transforming the data.
 
-```{r alternative pairs plot, fig.width=20, fig.height= 20, fig.align='center'}
+```{r alternative pairs plot, fig.width=20, fig.height= 20, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 dta1 <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|> 
   #filter(popularity > 59) |> 
   rename(title = track_name,
@@ -490,7 +491,7 @@ When considering all this variables in the model its significance got really hig
 
 Other than my alternative model which I added in this html, I could've also analyzed some plots like `loud~energy` `energy~acoustics` `loud-acoustics`. I did not venture into those ones; While I was trying to predict more on a industry level type of scenario probably business related, I cannot deny that these graphs are also useful scenarios because they may increase a song's quality. But that's pay for another check.
 
-```{r, fig.align='center', fig.width=10}
+```{r, fig.align='center', fig.width=10, message=FALSE, warning=FALSE, echo=FALSE}
 dtwhat <- inner_join(dta, df, by = c("title", "artist"), relationship =
   "many-to-many") |> 
   dplyr::select(-track_genre) |> 
@@ -532,7 +533,7 @@ grid.arrange(g11,g22,g33, ncol=3, top = "Other Possible Models")
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 datatable(dt)
 ```
 
@@ -549,7 +550,7 @@ datatable(dt)
 
 <br>
 
-```{r raw, fig.width=10, fig.width=10, fig.align='center'}
+```{r raw, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 dt$daily1 <- exp(dt$daily1)
 dt$monthly_listeners <- exp(dt$monthly_listeners)
 
@@ -579,7 +580,7 @@ This is how the data looked like after taking the log of Y.
 
 <br>
 
-```{r y transformed, fig.width=10, fig.width=10, fig.align='center'}
+```{r y transformed, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 dt$daily1 <- log(dt$daily1)
 
 
@@ -607,7 +608,7 @@ This is how the plot looks after a double log.
 
 <br>
 
-```{r final transformed, fig.width=10, fig.width=10, fig.align='center'}
+```{r final transformed, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 
 dt$monthly_listeners <- log(dt$monthly_listeners)
 
@@ -621,7 +622,7 @@ plot(dt$monthly_listeners, dt$daily1, col = "orange", pch = 19, xlab = "Monthly 
 
 <br>
 
-```{r, fig.width=10, fig.width=10, fig.align='center'}
+```{r, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 pander::pander(summary(mylm1))
 ```
 
@@ -643,7 +644,7 @@ Continue to model summary to keep on reading about this model, or read about an 
 
 <br>
 
-```{r alternative model, fig.align='center', fig.width=13.5}
+```{r alternative model, fig.align='center', fig.width=13.5, message=FALSE, warning=FALSE, echo=FALSE}
 dtas <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|>
   filter(popularity > 59) |>
   rename(title = track_name,
@@ -866,7 +867,7 @@ Popularity had a big role in this model, Spotify offers an expert rating on song
 
 <br>
 
-```{r popularity segregation, fig.align='center'}
+```{r popularity segregation, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 
 dtag <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|>
   #filter(popularity > 59) |>
@@ -974,7 +975,7 @@ So I filtered songs that are popular above 60, which is were a normal trend is o
 
 After filtering the daily~streams plot looked like this. This is colored by popularity group, where popularity 1 are the most popular songs and 3 the lowest. This is considering that they are all popular songs overall compared to the whole industry. And on the previous tab you can see how it looks like with a couple representations of my model with the popularity groups segregated.
 
-```{r, fig.align='center'}
+```{r, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 asd <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|>
   filter(popularity > 59) |>
   rename(title = track_name,
@@ -1119,7 +1120,7 @@ When considering all this variables in the model its significance got better a l
 $$\text{Math equation and model summary:} \\\ \\ \text{Song daily streams} = \text{Popularity} + \text{monthly listeners} \\ + \text{months since peak} \\ + \text{Popular artist influence} \times \text{Current trend} \\ + \text{popularity} \times \text{genre} \\ + \text{All time streams} \times \text{words} \\ + \text{All time streams} \times \text{popular artist} \\ + \text{All time streams} \times \text{Current trend} \times \text{Peak last year} $$
 <br>
 
-```{r lms summary, fig.width=10, fig.width=10, fig.align='center'}
+```{r lms summary, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 pander::pander(summary(mylms))
 ```
 
@@ -1133,7 +1134,7 @@ This model's summary looks decent for not 100% correlated variables. R^2^ of .69
  
 <br>
  
-```{r alternative diagnostic, fig.width=10, fig.width=10, fig.align='center'}
+```{r alternative diagnostic, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 par(mfrow=c(1,3))
 plot(mylms,which=1:2)
 plot(mylms$residuals)
@@ -1149,7 +1150,7 @@ Diagnostics look good, only problem to appear to be present is a little of right
  
 <br>
 
-```{r alternative validation}
+```{r alternative validation, message=FALSE, warning=FALSE, echo=FALSE}
 
 set.seed(1)
  
@@ -1234,7 +1235,7 @@ $$ \text{Math equation and model summary:} \\\ \\  \text{Artist Daily Streams} =
 
 <br>
  
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 pander::pander(summary(mylm))
 ```
 
@@ -1252,7 +1253,7 @@ This model abilitates the user to test the assumption of streams increase per fo
  
 <br>
  
-```{r original diagnostic, fig.width=10, fig.width=10, fig.align='center'}
+```{r original diagnostic, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 par(mfrow=c(1,3))
 plot(mylm,which=1:2)
 plot(mylm$residuals)
@@ -1282,7 +1283,7 @@ Here are a couple examples on how to interpret this model, and how to think abou
 
 <br>
 
-```{r pred 1 graph, fig.align='center', fig.width=10}
+```{r pred 1 graph, fig.align='center', fig.width=10, message=FALSE, warning=FALSE, echo=FALSE}
 
 average_monthly_followers <- mean(dt$monthly_listeners)
 mean_artist_streams <- mean(dt$artist_streams)
@@ -1363,7 +1364,7 @@ ggplot(dt, aes(y = daily1, x = monthly_listeners)) +
 
 <br>
 
-```{r pred 1 }
+```{r pred 1, message=FALSE, warning=FALSE, echo=FALSE }
 
 prediction_df <- data.frame(
   "Name" = c("Prediction 1", "Prediction 2"),
@@ -1399,7 +1400,7 @@ We can say that the slope of this line is of **`r exp(b[3])`**, this means that 
 
 <br>
 
-```{r, fig.align='center', fig.width=10}
+```{r, fig.align='center', fig.width=10, message=FALSE, warning=FALSE, echo=FALSE}
 
 get_prediction_intervals <- function(model, data) {
 
@@ -1485,7 +1486,7 @@ This would also be a good thing, it means that most data points can be explained
 
 <br>
 
-```{r, fig.width=10, fig.width=10, fig.align='center'}
+```{r, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
 
 ggplot(dt, aes(y=(daily1), x=(artist_streams)))+
   geom_point(show.legend = F, col="firebrick")+
@@ -1521,7 +1522,7 @@ As seen here, total artist streams (All time) is also a good predictor of daily 
 
 <br>
  
-```{r original validation?}
+```{r original validation?, message=FALSE, warning=FALSE, echo=FALSE}
 
 set.seed(1)
  

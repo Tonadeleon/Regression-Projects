@@ -176,31 +176,6 @@ $$SSTO= SSE+SSR$$
 
 <br>
 
-
-```r
-SSE <- sum((weather$High-weatherLm$fit)^2)
-SSTO <- sum((weather$High-mean(weather$High))^2)
-SSR <-SSTO-SSE
-R2<-SSR/SSTO
-
-SSR_formatted <- sprintf("%.2f", SSR)
-SSTO_formatted <- sprintf("%.2f", SSTO)
-R2_formatted <- sprintf("%.2f", R2)
-
-# Create a data frame with SSR, SSTO, and R2 values
-data <- data.frame(Measurement = c("SSR", "SSTO"), Value = c(SSR, SSTO))
-
-ggplot(data, aes(x = Measurement, y = Value, fill = Measurement)) +
-  geom_bar(stat = "identity", color = "black", width = 0.5) +
-  labs(
-    x = "",
-    y = "Sum of Squares",
-    title = "SSR, SSTO comparisson",
-    fill = "Measurement"
-  ) +
-  theme_minimal()
-```
-
 <img src="Theory_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
 
 In difficult words **R^2^** is The proportion of variability in Y than
@@ -231,29 +206,6 @@ mean that your model will work perfectly all the time. <br> <br>
 #### MSE
 
 <br>
-
-
-```r
-ggplot(data = weather, aes(Year, High, col = High)) +
-  geom_point() +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, col = "black") +
-  geom_rect(aes(xmin = 12.5, xmax = 6.95, ymin = 29.41, ymax = 21, fill = "= 17.95"), alpha = 0.5) +
-  labs(
-    x = "Year from 1998 to 2023",
-    y = "High temperature in Fahrenheit",
-    title = "This is how the MSE would look like in the model",
-    subtitle = "This is the average of all the least squares",
-    col = "Temperature",
-    fill = "Avg Square"
-  ) +
-  theme_bw() +
-  theme(
-    legend.title = element_text(size = 7),
-    legend.text = element_text(size = 5),
-    legend.key.width = unit(.5, "cm"),
-    plot.subtitle = element_text(colour = "grey50")
-  )
-```
 
 <img src="Theory_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
 

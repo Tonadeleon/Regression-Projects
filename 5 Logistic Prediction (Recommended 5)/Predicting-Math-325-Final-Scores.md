@@ -53,11 +53,6 @@ Take a look at the summary of the logistic model put at work here.
 <br>
 
 
-```r
-pander(summary(myglm1))
-```
-
-
 --------------------------------------------------------------
      &nbsp;        Estimate   Std. Error   z value   Pr(>|z|) 
 ----------------- ---------- ------------ --------- ----------
@@ -105,14 +100,6 @@ $$ Probability \ of \ an \ A = \frac{e^{-256.695787 + 2.945925 \times 90}}{1 + e
 Which would translate to this:
 
 
-```r
-data.frame( a = predict(myglm1, newdata = data.frame(x=90), type = "response")) |> 
-  kable(col.names = "Probability of an A:",
-        align = "c")
-```
-
-
-
 | Probability of an A: |
 |:--------------------:|
 |      0.9997835       |
@@ -144,26 +131,6 @@ You'll be able to do this by summing all your proportions for each variable in y
 <br>
 
 
-```r
-data.frame(
-  a = 0,
-  b = 0,
-  c = 0,
-  d = 15,
-  e = 135,
-  f = .878,
-  g = .36) |> 
-  kable(col.names = c("Analysis 1",
-                      "Analysis 2",
-                      "Analysis 3",
-                      "... Analysis 11",
-                      "Raw Sum",
-                      "Raw / 165",
-                      "Contribution to grade"))
-```
-
-
-
 | Analysis 1| Analysis 2| Analysis 3| ... Analysis 11| Raw Sum| Raw / 165| Contribution to grade|
 |----------:|----------:|----------:|---------------:|-------:|---------:|---------------------:|
 |          0|          0|          0|              15|     135|     0.878|                  0.36|
@@ -177,14 +144,6 @@ To know what your chances would be we can take a look at the prediction below. T
 <br>
 
 
-```r
-data.frame( a = predict(myglm1, newdata = data.frame(x=85), type = "response")) |> 
-  kable(col.names = "Probability of an A:",
-        align = "c")
-```
-
-
-
 | Probability of an A: |
 |:--------------------:|
 |      0.0018474       |
@@ -196,24 +155,6 @@ Above you can see that, there's almost literally Zero chance of getting an A. Th
 <br>
 
 
-```r
-data.frame(
-  a = 15,
-  d = 15,
-  e = 165,
-  f = 100,
-  g = .42,
-  h = 30) |> 
-  kable(col.names = c("Analysis 1",
-                      "... Analysis 11",
-                      "Raw Sum",
-                      "Raw / 165",
-                      "Contribution to grade",
-                      "Final Exam"))
-```
-
-
-
 | Analysis 1| ... Analysis 11| Raw Sum| Raw / 165| Contribution to grade| Final Exam|
 |----------:|---------------:|-------:|---------:|---------------------:|----------:|
 |         15|              15|     165|       100|                  0.42|         30|
@@ -223,14 +164,6 @@ data.frame(
 If we predict with the same logic, you'll see there is no chance that you won't get an A. Even if we predict as if you got 30 in your exam. Look how likely you are of getting an A in this class. Did you realize how your chances of getting an A went from Zero to ONE HUNDRED? (basically). Then, we can consider the analyses as something you wouldn't want to take lightly.
 
 <br>
-
-
-```r
-data.frame( a = predict(myglm1, newdata = data.frame(x=41+4.5+5+5+22+12), type = "response")) |> 
-  kable(col.names = "Probability of an A:",
-        align = "c")
-```
-
 
 
 | Probability of an A: |
@@ -268,22 +201,6 @@ I am almost begging you to do them :D. Just kidding, but you can get high scores
 <br>
 
 
-```r
-data.frame(
-  a = 5,
-  d = 10,
-  e = 120,
-  f = .85,
-  g = .187) |> 
-  kable(col.names = c("Skill Quiz 1,2,3,4",
-                      "... Skill Quiz 14",
-                      "Raw Sum",
-                      "Raw / 140",
-                      "Contribution to grade"))
-```
-
-
-
 | Skill Quiz 1,2,3,4| ... Skill Quiz 14| Raw Sum| Raw / 140| Contribution to grade|
 |------------------:|-----------------:|-------:|---------:|---------------------:|
 |                  5|                10|     120|      0.85|                 0.187|
@@ -293,14 +210,6 @@ data.frame(
 Now let's use these for a prediction as we've been doing. Let's consider the second prediction from the analyses where you got 30 in your Final but 15 in all your analyses. But to help you understand their importance, you sadly got 4 your skills quizzes to 5 (As seen in the table above) 
 
 <br>
-
-
-```r
-data.frame( a = predict(myglm1, newdata = data.frame(x=41+18.7+4.5+5+5+12), type = "response")) |> 
-  kable(col.names = "Probability of an A:",
-        align = "c")
-```
-
 
 
 | Probability of an A: |
@@ -336,26 +245,6 @@ Consider the following:
 <br>
 
 
-```r
-data.frame(
-  a = 5,
-  b = 10,
-  c = 100,
-  d = .91,
-  e = .11,
-  f = 30,
-  g = 4.5) |> 
-  kable(col.names = c("Review 1 ,2",
-                      "... Review 11",
-                      "Raw Sum",
-                      "Raw / 110",
-                      "Contribution to grade",
-                      "Final Exam",
-                      "Final Exam Contribution"))
-```
-
-
-
 | Review 1 ,2| ... Review 11| Raw Sum| Raw / 110| Contribution to grade| Final Exam| Final Exam Contribution|
 |-----------:|-------------:|-------:|---------:|---------------------:|----------:|-----------------------:|
 |           5|            10|     100|      0.91|                  0.11|         30|                     4.5|
@@ -365,14 +254,6 @@ data.frame(
 See what happens if you miss a few, let's say your first 2 peer reviews. We are considering the same 30 gradein your final, that you got 15 on your analyses and 10 in your skills quizzes. Even with this, your chances of getting an A are still as high as they can get.
 
 <br>
-
-
-```r
-data.frame( a = predict(myglm1, newdata = data.frame(x=41+22+4.5+11+5+5), type = "response")) |> 
-  kable(col.names = "Probability of an A:",
-        align = "c")
-```
-
 
 
 | Probability of an A: |
@@ -396,18 +277,6 @@ So, let's jump in and see how these two affect your grade. Since class activitie
 <br>
 
 
-```r
-data.frame(
-  a = "50%",
-  b = "100%",
-  c = .075 ) |> 
-  kable(col.names = c("... all assessments",
-                      "... all activities",
-                      "Summed contribution to grade"))
-```
-
-
-
 |... all assessments |... all activities | Summed contribution to grade|
 |:-------------------|:------------------|----------------------------:|
 |50%                 |100%               |                        0.075|
@@ -417,14 +286,6 @@ data.frame(
 Since getting all right in class activities get's 5 final percent in your score; assume you got 50% in your final proportional score for your assessment quizzes, thus getting 2.5 out of the 5% possible. (The other variables are as we've been doing, 30 in your final and so on..)
 
 <br>
-
-
-```r
-data.frame( a = predict(myglm1, newdata = data.frame(x=41+22+5.5+12+5+2.5), type = "response")) |> 
-  kable(col.names = "Probability of an A:",
-        align = "c")
-```
-
 
 
 | Probability of an A: |

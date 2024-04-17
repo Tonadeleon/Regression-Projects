@@ -278,7 +278,7 @@ $$SSTO= SSE+SSR$$
 
 <br>
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE, message=FALSE, warning=FALSE}
 
 SSE <- sum((weather$High-weatherLm$fit)^2)
 SSTO <- sum((weather$High-mean(weather$High))^2)
@@ -334,7 +334,7 @@ mean that your model will work perfectly all the time. <br> <br>
 
 <br>
 
-```{r, fig.align='center'}
+```{r, fig.align='center', echo=FALSE, message=FALSE, warning=FALSE}
 
 ggplot(data = weather, aes(Year, High, col = High)) +
   geom_point() +

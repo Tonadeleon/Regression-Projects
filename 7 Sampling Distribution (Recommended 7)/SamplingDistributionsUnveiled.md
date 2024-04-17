@@ -22,28 +22,8 @@ Here is an example of how 1 data set would look like. Check out the true paramet
 <br> <br>
 
 
-```r
-library(tidyverse)
-library(pander)
-```
 
 
-```r
-N <- 1000
-n <- 100
-
-
-storage <- matrix(NA, nrow = N, ncol = 2)
-for (i in 1:N) {
-
-  Xi <- rep(seq(30, 100, length.out = n/2), each = 2)
-  Yi <- 2.5 + 3 * Xi + rnorm(n, 0, 1.2)
-  
-
-  mylm <- lm(Yi ~ Xi)
-  storage[i, ] <- coef(mylm)
-}
-```
 
 ![](SamplingDistributionsUnveiled_files/figure-html/pressure-1.png)<!-- -->
 
@@ -75,18 +55,6 @@ If we were to make a histogram of the **1000** recorded slopes it would look som
 
 <br>
 
-
-```r
-hist_color_b1 <- "lightblue"
-
-hist(storage[, 2], main = "Sampling Distribution of b1", xlab = "b1", breaks = 30, col = hist_color_b1)
-
-mean_value_b1 <- mean(storage[, 2])
-abline(v = mean_value_b1, col = "red", lwd = 2, lty = 2)
-
-legend("topright", legend = sprintf("Mean: %.4f", mean_value_b1), col = "red", lwd = 2, lty = 2)
-```
-
 ![](SamplingDistributionsUnveiled_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 <br> 
@@ -111,18 +79,6 @@ Then the recorded data frame would be the sample distribution of all our estimat
 After that we can do many things, like calculating the mean, median, mode of the distribution. However the most common and probably useful, is the mean. **(\( \bar{b}_0 \))** The calculated mean will be expected to be close to the population (the true) y-intercept **\( \beta_0 \)**. We can also calculate the standard deviation of this distribution or in more accurate words the standard error of the y-intercept, **\( Sb_0 \)** which measures the variability of the slope estimates around the true population y-intercept.
 
 <br>
-
-
-```r
-hist_color <- "lightblue"
-
-hist(storage[, 1], main = "Sampling Distribution of b0", xlab = "b0", breaks = 30, col = hist_color)
-
-mean_value <- mean(storage[, 1])
-abline(v = mean_value, col = "red", lwd = 2, lty = 2)
-
-legend("topright", legend = sprintf("Mean: %.4f", mean_value), col = "red", lwd = 2, lty = 2)
-```
 
 ![](SamplingDistributionsUnveiled_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
@@ -158,17 +114,12 @@ For example, take a look at the last of the **1000** models we calculated, these
 <br>
 
 
-```r
-pander(mylm)
-```
-
-
 ----------------------------------------------------------------
      &nbsp;        Estimate   Std. Error   t value    Pr(>|t|)  
 ----------------- ---------- ------------ --------- ------------
- **(Intercept)**    2.181       0.3952      5.519    2.791e-07  
+ **(Intercept)**    2.205       0.4545      4.851    4.626e-06  
 
-     **Xi**         3.004      0.005796     518.2    2.774e-170 
+     **Xi**         3.005      0.006666     450.8    2.357e-164 
 ----------------------------------------------------------------
 
 Table: Fitting linear model: Yi ~ Xi
@@ -210,17 +161,12 @@ Take a look at the regression model we used for this analysis and see how their 
 <br>
 
 
-```r
-pander(mylm)
-```
-
-
 ----------------------------------------------------------------
      &nbsp;        Estimate   Std. Error   t value    Pr(>|t|)  
 ----------------- ---------- ------------ --------- ------------
- **(Intercept)**    2.181       0.3952      5.519    2.791e-07  
+ **(Intercept)**    2.205       0.4545      4.851    4.626e-06  
 
-     **Xi**         3.004      0.005796     518.2    2.774e-170 
+     **Xi**         3.005      0.006666     450.8    2.357e-164 
 ----------------------------------------------------------------
 
 Table: Fitting linear model: Yi ~ Xi
@@ -234,25 +180,6 @@ This would mean, however, that you are almost 0% probable on being incorrect for
 Here is a visual on how they'd look drawn and shaded for their respective regions in a two tail T test. We'll be using random data for this visual representation because if we did with the 1000 samples we took, their P value (as shown in the table above) would be so extra small (meaning that we are certain our results are correct or close to the truth) that we couldn't be able to even see it! Check out the area that's the p value for that distribution and t test in the case of a two tailed.
 
 <br> <br>
-
-
-```r
-tprob <- function(t=1, df=3, show.normal=TRUE, xlim=c(-4,4)){
-  curve(dt(x, df), from=xlim[1], to=xlim[2], lwd=2)
-  xlo = seq(xlim[1], -abs(t), length.out=100)
-  xhi = seq(abs(t), xlim[2], length.out=100)
-  polygon(c(xlo[1],xlo,xlo[100]), c(0,dt(xlo,df),0), col="#128b37", border=NA)
-  polygon(c(xhi[1],xhi,xhi[100]), c(0,dt(xhi,df),0), col="#128b37", border=NA)  
-  abline(h=0, v=c(-abs(t),abs(t)), col=c("gray","orange","orange"), lwd=c(1,3,3))
-  text(xlo[1], dt(.5,df), paste("Area = ", round(pt(-abs(t), df)*2,4)), pos=4)
-  if(show.normal){
-    curve(dnorm(x), add=TRUE, col="gray")
-  }
-}
-
-# Use the function
-tprob(t=-2, df=15)
-```
 
 ![](SamplingDistributionsUnveiled_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
@@ -280,22 +207,6 @@ In summary, a confidence interval is a range of values that are likely to contai
 For example, I'll visualize a simple linear regression from the cars data so you take a look at the confidence interval for its respective linear model. I don't do it with the sample we've been analyzing so far because it's points are so tightly related to the true parameters in which I built it, that the truth is already there.
 
 <br>
-
-
-```r
-ldc <- lm(dist ~ speed, data = cars)
-
-ggplot(cars, aes(x = speed, y = dist)) +
-  
-  geom_point(color = "steelblue") +
-  geom_smooth(method = "lm", formula=y~x, se = TRUE, color = "blue") +
-  
-  labs(title = "Linear Model with Confidence Interval",
-       x = "Speed",
-       y = "Distance") +
-  
-  theme_minimal()
-```
 
 ![](SamplingDistributionsUnveiled_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 

@@ -124,7 +124,7 @@ Take a look at the summary of the logistic model put at work here.
 
 <br>
 
-```{r summary}
+```{r summary, message=FALSE, warning=FALSE, echo=FALSE}
 pander(summary(myglm1))
 ```
 
@@ -154,7 +154,7 @@ $$ Probability \ of \ an \ A = \frac{e^{-256.695787 + 2.945925 \times 90}}{1 + e
 
 Which would translate to this:
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame( a = predict(myglm1, newdata = data.frame(x=90), type = "response")) |> 
   kable(col.names = "Probability of an A:",
         align = "c")
@@ -186,7 +186,7 @@ You'll be able to do this by summing all your proportions for each variable in y
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame(
   a = 0,
   b = 0,
@@ -213,7 +213,7 @@ To know what your chances would be we can take a look at the prediction below. T
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame( a = predict(myglm1, newdata = data.frame(x=85), type = "response")) |> 
   kable(col.names = "Probability of an A:",
         align = "c")
@@ -226,7 +226,7 @@ Above you can see that, there's almost literally Zero chance of getting an A. Th
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame(
   a = 15,
   d = 15,
@@ -249,7 +249,7 @@ If we predict with the same logic, you'll see there is no chance that you won't 
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame( a = predict(myglm1, newdata = data.frame(x=41+4.5+5+5+22+12), type = "response")) |> 
   kable(col.names = "Probability of an A:",
         align = "c")
@@ -285,7 +285,7 @@ I am almost begging you to do them :D. Just kidding, but you can get high scores
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame(
   a = 5,
   d = 10,
@@ -306,7 +306,7 @@ Now let's use these for a prediction as we've been doing. Let's consider the sec
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame( a = predict(myglm1, newdata = data.frame(x=41+18.7+4.5+5+5+12), type = "response")) |> 
   kable(col.names = "Probability of an A:",
         align = "c")
@@ -341,7 +341,7 @@ Consider the following:
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame(
   a = 5,
   b = 10,
@@ -366,7 +366,7 @@ See what happens if you miss a few, let's say your first 2 peer reviews. We are 
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame( a = predict(myglm1, newdata = data.frame(x=41+22+4.5+11+5+5), type = "response")) |> 
   kable(col.names = "Probability of an A:",
         align = "c")
@@ -388,7 +388,7 @@ So, let's jump in and see how these two affect your grade. Since class activitie
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame(
   a = "50%",
   b = "100%",
@@ -405,7 +405,7 @@ Since getting all right in class activities get's 5 final percent in your score;
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 data.frame( a = predict(myglm1, newdata = data.frame(x=41+22+5.5+12+5+2.5), type = "response")) |> 
   kable(col.names = "Probability of an A:",
         align = "c")

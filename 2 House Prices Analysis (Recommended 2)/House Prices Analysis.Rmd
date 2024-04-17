@@ -5,13 +5,12 @@ output:
   html_document:
     theme: cerulean
     code_folding: hide
+    keep_md: true
 editor_options: 
-  chunk_output_type: inline
-execute:
-  keep-md: true
+  chunk_output_type: console
 ---
 
-```{r libs, message=FALSE, warning=FALSE}
+```{r libs, message=FALSE, warning=FALSE, echo=FALSE}
 library(tidyverse)
 library(pander)
 library(gridExtra)
@@ -21,7 +20,7 @@ library(knitr)
 library(formattable)
 ```
 
-```{r wrangle, message=FALSE, warning=FALSE}
+```{r wrangle, message=FALSE, warning=FALSE, echo=FALSE}
 
 dt <- read_csv("train.csv") |> 
   rename(bsm = "TotalBsmtSF",
@@ -137,7 +136,7 @@ b <- coef(mylm)
 
 #### Introduction
 
-```{r plot, fig.width=10,fig.height=10, message=FALSE, warning=FALSE}
+```{r plot, fig.width=10,fig.height=10, message=FALSE, warning=FALSE, echo=FALSE}
 
 g10 <- ggplot(dt10, aes(tsf1,sp))+
   
@@ -424,7 +423,7 @@ $$ Math \ Equation \ and \ Model \ Summary \:  \\\ \\\ \ Selling \ Price_i = Nei
 
 <br>
 
-```{r model summary}
+```{r model summary, message=FALSE, warning=FALSE, echo=FALSE}
 cap <- paste(
   "nbd = Neighborhood | bld1 = Building Type | bdr = Number of Bedrooms |",
   "sc = Sell Condition | al = Alley Included | gr = Garage Quality |",
@@ -447,7 +446,7 @@ This can be proven by considering the following scenario. It will show the predi
 
 <br>
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 
 pr1 <- predict(
   mylm,
@@ -516,7 +515,7 @@ Consider this next prediction of an imaginary house with 10,000 sqft lot area, 2
 
 <br>
 
-```{r predict1}
+```{r predict1, message=FALSE, warning=FALSE, echo=FALSE}
 pr <- predict(
   mylm,
   newdata = data.frame(
@@ -549,7 +548,7 @@ Now try to match 2000 sqft (x axis) in quality rating 10 group with it's regress
 
 <br>
 
-```{r predict2}
+```{r predict2, message=FALSE, warning=FALSE, echo=FALSE}
 pr <- predict(
   mylm,
   newdata = data.frame(
@@ -582,7 +581,7 @@ The predicted value changed so much that the house price dropped by almost 50 th
 
 <br>
 
-```{r predict3}
+```{r predict3, message=FALSE, warning=FALSE, echo=FALSE}
 pr <- predict(
   mylm,
   newdata = data.frame(
@@ -617,7 +616,7 @@ The model can show as well the best case scenarios for a house. For example let'
 
 <br>
 
-```{r predict4}
+```{r predict4, message=FALSE, warning=FALSE, echo=FALSE}
 pr <- predict(
   mylm,
   newdata = data.frame(
@@ -659,7 +658,7 @@ The regression model constructed in this analysis demonstrates the significance 
 Here You'll find a brief summary of a few distributions I considered to be relevant, and the reason why I added them as an explanatory factor for house prices; You can read as well how these factors come into play and how they are used in the model.
 
 <br>
-```{r boxplot1}
+```{r boxplot1, message=FALSE, warning=FALSE, echo=FALSE}
 ggplot(dt, aes(bld, sp))+
   geom_boxplot(show.legend = F, col="grey30", fill="orange") +
   theme_bw() +
@@ -677,7 +676,7 @@ I analyzed this boxplot to choose what Building types to include in my two categ
 
 <br>
 
-```{r boxplot2}
+```{r boxplot2, message=FALSE, warning=FALSE, echo=FALSE}
 ggplot(dt, aes(Neighborhood, sp))+
   geom_boxplot(show.legend = F, col="grey30", fill="orange") +
   theme_bw() +
@@ -696,7 +695,7 @@ The same thought process was considered here. If any house was within rich neigh
 
 <br>
 
-```{r boxplot 3}
+```{r boxplot 3, message=FALSE, warning=FALSE, echo=FALSE}
 ggplot(dt, aes(SaleCondition, sp))+
   geom_boxplot(show.legend = F, col="grey30", fill="orange") +
   theme_bw() +
@@ -720,7 +719,7 @@ Here the variable was a little different to determine, however the boxplot helpe
 ## Diagnostic Plots
 
 <br>
-```{r diagnostic1}
+```{r diagnostic1, message=FALSE, warning=FALSE, echo=FALSE}
 par(mfrow=c(1,2))
 plot(mylm,which=1)
 plot(mylm$residuals)
@@ -732,7 +731,7 @@ Diagnostic plots don't look too promising. Variance has the appearance of being 
 
 <br>
 
-```{r diagnostic2}
+```{r diagnostic2, message=FALSE, warning=FALSE, echo=FALSE}
 par(mfrow=c(1,2))
 plot(mylm,which=2)
 hist(dt$tsf1, xlab="", xaxt='n', yaxt='n', main="Total Squared Footage", col="firebrick")
@@ -750,7 +749,7 @@ As a note, I did try transforming the data, however I did not find any significa
 
 <br>
 
-```{r validations}
+```{r validations, message=FALSE, warning=FALSE, echo=FALSE}
 set.seed(13)
 
 num_rows <- 1000 #1460 total
@@ -831,7 +830,7 @@ The data table for this regression model originally had less columns. I mutated 
 
 <bt><br>
 
-```{r dataset}
+```{r dataset, message=FALSE, warning=FALSE, echo=FALSE}
 datatable(dt)
 ```
 

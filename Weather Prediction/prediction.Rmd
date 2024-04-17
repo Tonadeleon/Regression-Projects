@@ -10,7 +10,7 @@ editor_options:
     wrap: 72
 ---
 
-```{r setup, echo=FALSE, include=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(readr)
 library(tidyverse)
 library(pander)
@@ -59,7 +59,7 @@ rounded Predicted Temperature, I will reveal it at the end of the
 analysis. 
 <br> <br>
 
-```{r pressure, echo=FALSE}
+```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
 weatherLm <- lm(High~Year,data=weather)
 PredictedWeather <- predict(weatherLm, data.frame(Year=26))
 
@@ -95,7 +95,7 @@ years in the table being **year 1 = 1994** all the way to **year 30 =
 2023.** 
 <br>
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 datatable(weatherO)
 ```
 
@@ -111,7 +111,7 @@ take in consideration ranged between **20 to 34 Fahrenheit** using the
 **7.5 degrees standard deviation.**
 <br> <br>
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 fav_stats(weatherO$High) %>% 
   pander()
 ```
@@ -130,7 +130,7 @@ get a better fit. I got a small difference, temperature was hard to
 measure even in the same day in different years. Take a look at my
 linear model summary below. <br> <br>
 
-```{r cars, echo=FALSE}
+```{r cars, echo=FALSE, message=FALSE, warning=FALSE}
 summary(weatherLm) %>% 
   pander()
 
@@ -142,7 +142,7 @@ summary(weatherLm) %>%
 
 <br> <br>
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 par(mfrow=c(1,3))
 plot(weatherLm,which=1:2)
 plot(weatherLm$residuals)
@@ -168,7 +168,7 @@ After running the prediction we get the so awaited prediction for High
 Temperature in Monday Jan/22/2024 as a range. 
 <br> <br>
 
-```{r, results='asis', echo=FALSE}
+```{r, results='asis', echo=FALSE, message=FALSE, warning=FALSE}
 stdev<-sd(weatherO$High)
 Interval_Predicted<- c((28-7.45),(28+7.45))
 Combined <- cbind(PredictedWeather, stdev, Interval_Predicted)

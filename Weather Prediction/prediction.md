@@ -72,8 +72,8 @@ years in the table being **year 1 = 1994** all the way to **year 30 =
 
 
 ```{=html}
-<div class="datatables html-widget html-fill-item" id="htmlwidget-420fbf0149e9b48662cf" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-420fbf0149e9b48662cf">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30],[39,28,28,34,34,33,29,29,27,37,12,28,23,20,5,31,34,25,32,16,34,25,27,34,28,27,34,28,25,18]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>High<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Year","targets":1},{"name":"High","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8be8dd02505285c485a8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8be8dd02505285c485a8">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30],[39,28,28,34,34,33,29,29,27,37,12,28,23,20,5,31,34,25,32,16,34,25,27,34,28,27,34,28,25,18]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Year<\/th>\n      <th>High<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Year","targets":1},{"name":"High","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 ```
 
 <br> <br>
@@ -132,13 +132,6 @@ Table: Fitting linear model: High ~ Year
 ### Diagnostic Plots
 
 <br> <br>
-
-
-```r
-par(mfrow=c(1,3))
-plot(weatherLm,which=1:2)
-plot(weatherLm$residuals)
-```
 
 ![](prediction_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 

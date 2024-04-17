@@ -1,4 +1,8 @@
-This is a compilation of my most recent works with regression models. Feel free to check out my md files, as they allow you to see my code and visualizations while glimpsing at my analyses. If you are curious to see the actual HTML format which is way better, feel free to reach out!
+This is a compilation of my most recent works with regression models. 
+
+Each folder has two main Files: A simple file with a link to the HTML versions of my analyses hosted online, and MD files to see in Github.
+For a better experience Feel free to check out the HTML Versions (Better Formatting).
+My md files, will allow you to glimpse at my analyses, but the rendering is not that good (Looks funky).
 
 1.- Spotify Regression:
         My Favorite project. I worked with raw data gathered from Spotify's API to make a significant regression model that predicts an Artist         daily Streams (Leading to daily earnings) with multiple variables. Validated with 95% confidence R^2

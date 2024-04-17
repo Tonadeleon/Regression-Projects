@@ -1,13 +1,14 @@
 ---
-title: "House Prices"
+title: "House Prices Analysis"
 author: "Tonatiuh De Leon"
 output: 
   html_document:
     theme: cerulean
     code_folding: hide
-    keep_md: true
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
+execute:
+  keep-md: true
 ---
 
 ```{r libs, message=FALSE, warning=FALSE}
@@ -16,6 +17,8 @@ library(pander)
 library(gridExtra)
 library(DT)
 library(grid)
+library(knitr)
+library(formattable)
 ```
 
 ```{r wrangle, message=FALSE, warning=FALSE}
@@ -103,6 +106,23 @@ dt5 <- dt |>
 
 dt4 <- dt |> 
   filter(oq1 == 4)
+
+dtg <- dt |> 
+  rename(`Overall Quality` = oq1) |> 
+  group_by(`Overall Quality`) |> 
+  summarise(
+    `Lot Area` = round(mean(LotArea)),
+    `Neighborhoods` = round(mean(nbd)),
+    #`Overall Quality` = round(mean(oc1)),
+    `Building Type` = round(mean(bld1)),
+    `Kitchen Quality` = round(mean(kq)),
+    `Bathrooms` = round(mean(bth)),
+    `Bedrooms` = round(mean(bdr)),
+    `Sale Condition` = round(mean(sc)),
+    `Heating Quality` = round(mean(ht)),
+    `Garage` = round(mean(gr)),
+    `fireplace` = round(mean(fp))) |> 
+  arrange(desc(`Overall Quality`))
 
 
 mylm <- lm(sp ~  nbd + tsf1:oq + tsf1:oc1 + tsf1:nbd + bld1 + tsf1:kq + tsf1:bth + bdr + tsf1:bdr + sc + tsf1:ht + al + gr + tsf1:fp + LotArea , data=dt)
@@ -332,11 +352,11 @@ grid.arrange(g10, g9, g8, g7, g6, g5, g4,
 
 This analysis helps in considering the possibility that there are multiple factors driving the differences in selling prices for a house. The survey data set to which this regression model was applied can be found in [Kaggle](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data) as one of their real world surveys (See Data Set tab to explore all the possible variables).
 
-I created a ranking system for the houses in the survey based on the amount of factors and utilities it includes, as well as their quality. This is a single model that supposes that a good quality house should include the most of many factors driving their selling prices in it and have the best quality possible. This way a House can be considered of good quality taking it to higher rankings; for example a good sized Lot Area in the house, a good quality kitchen, average or higher number of bedrooms, among other variables. This line of thought is the basis of my current model. The graph was divided per each house rating group from 4-10 to visually see the difference in a 2D graph. (Groups 1-3 weren't as significant so, I added them with group 4)
+I created a ranking system for the houses in the survey based on the amount of factors and utilities it includes, as well as their quality. This is a single model that supposes that a good quality house should include the most of many factors driving their selling prices in it and have the best quality possible. This way a House can be considered of good quality taking it to higher rankings; for example a good sized Lot Area in the house, a good quality kitchen, average or higher number of bedrooms, among other variables. This line of thought is the basis of my current model. The graph was divided per each house rating group from 4-10 to visually see the difference in a 2D graph. (Groups 1-3 weren't as significant so, I added them with group 4).
 
-When analyzing the graph consider their differences at their x and y axis. Looking at them from left to right, top to bottom; We see that quality 10 houses are generally larger in total square footage and are sold by much more than the other types of quality homes. this could also be said about rank 9, however at rank 8 we see a significant drop in maximum selling price as seen in its Y axis as compared to the previous graphs. This means that as the houses start to get lower in quality, and in size, their selling prices become smaller as well.
+When analyzing the graphs consider their differences at their x and y axis. Looking at them from left to right, top to bottom; We see that quality 10 houses are generally larger in total square footage and are sold by much more than the other types of quality homes. this could also be said about rank 9, however at rank 8 we see a significant drop in maximum selling price as seen in its Y axis as compared to the previous graphs. This means that as the houses start to get lower in quality, and in size, their selling prices become smaller as well. These graphs are also only a simple representation of multiple slices of this regression model that align to the scenarios depicted on each of the subtitles. These scenarios represent the average factor per quality rating. How can we tell if a house is of good quality? We may need to consider many factors and put them at play in this regression model. 
 
-How can we tell if a house is of good quality? We may need to consider many factors and put them at play in this regression model.
+Consider reading further in the explanatory variables and model summary tabs for deeper understanding on how this model works.
 
 <br><br>
 
@@ -348,17 +368,17 @@ The most clear ones would be:
 
 <br>
 
-1. <span style="color: #0047AB;">Square Footage</span>
+1. <span style="color: #0047AB;">Square Footage (Total building square footage)</span>
 
-2. <span style="color: #0047AB;">Utilities Included</span>
+2. <span style="color: #0047AB;">Utilities Included (Are most utilities included, at least 2)</span>
 
-3. <span style="color: #0047AB;">Quality of the home</span>
+3. <span style="color: #0047AB;">Quality of the home (Home expert rating)</span>
 
 4. <span style="color: #0047AB;">Number of Bedrooms</span>
 
-5. <span style="color: #0047AB;">Garage Quality</span>
+5. <span style="color: #0047AB;">Garage Quality (Does it have a garage and is it a good quality garage)</span>
 
-6. <span style="color: #0047AB;">Kitchen Quality</span>
+6. <span style="color: #0047AB;">Kitchen Quality (Home expert rating 1 to 5, 1 best)</span>
 
 7. <span style="color: #0047AB;">Number of Bathrooms</span>
 
@@ -378,25 +398,29 @@ Then there may be others that could appear to not be as obvious, but by using re
 
 12. <span style="color: #0047AB;">Lot Area of the property is an important factor to consider.</span>
 
+13. <span style="color: #0047AB;">Average Quality of the Home (An Average of many expert ratings (1 to 10, 1 best)).</span>
+
 <br>
 
 Finally we have a couple of factors that appear to be significant when considering house selling prices, such as:
 
 <br>
 
-13. <span style="color: #0047AB;">The house has an Alley</span>
+14. <span style="color: #0047AB;">The house has an Alley</span>
 
-14. <span style="color: #0047AB;">The house has quality fireplaces</span>
+15. <span style="color: #0047AB;">The house has quality fireplaces</span>
 
 <br>
 
-When used in the final model, all of these variables are significant and contribute (even if too little) to the final predictive model used for this data set.
+When used in the final model, all of these variables are significant and contribute (even if too little) to the final predictive model used for this data set. However this doesn't mean that these are the only ones that should be included in the model.
 
 <br> <br>
 
 #### Model Summary
 
-With all of these factors in mind, and by adding some interaction terms between these factors and our quantitative variable (Total Square Feet), we get to this final model. I consider it to be significant because of the significance in its terms (all significant terms at .05 alpha level), a considerable R^2^ of .90, and an even better validation R^2^ of .91
+<br>
+
+$$ Math \ Equation \ and \ Model \ Summary \:  \\\ \\\ \ Selling \ Price_i = Neighborhood_i + Has \ Alley_i + Has \ Garage_i + Number \ of \ Bedrooms_i +  Building \ Type_i + \\ \ Sale \ Condition_i + Lot \ Area_i + Total \ Square \ Feet_i \cdot Overall \ Quality_i + Total \ Square \ Feet_i \cdot Average \ Quality_i + \\ \ Total \ Square \ Feet_i \cdot Neighborhood_i + Total \ Square \ Feet_i \cdot Kitchen_i \ Quality_i + Total \ Square \ Feet_i \cdot Number \ of \ Bathrooms_i + \\ \ Total \ Square \ Feet_i \cdot Number \ of \ Bedrooms_i + Total \ Square \ Feet_i \cdot Heating \ System \ Quality_i + Total \ Square \ Feet_i \cdot Has \ Fireplace_i$$
 
 <br>
 
@@ -413,12 +437,76 @@ pander(summary(mylm), caption = cap)
 ```
 
 <br>
+With all of these factors in mind, and by adding some interaction terms between these factors and our quantitative variable (Total Square Feet), we get to this final model. I consider it to be significant because of the significance in its terms (all significant terms at .05 alpha level), a considerable R^2^ of .90, and an even better validation R^2^ of .91 that came in place by using the mathematical regression equation presented above to predict Y which in this case is house selling prices; Where all of this variables can be modified to predict for specific types of homes and multiple different scenarios (See conclusion and interpretation tab).
 
-With a Residual Standard Error of $25,000 this model comes closer to being more accurate than previous ones I tried. My claim is that this model works for it's purposes even when tested in different conditions it performs equally good or even better. The slope coefficients of this model represent the change in the dependent variable for a one-unit increase in the corresponding predictor, holding all other predictors constant. this is why, the slope's interpretation can vary depending on the specific factors involved in the model and their coefficients. 
+With a Residual Standard Error of $25,000 this model comes closer to being more accurate than previous ones I tried. My claim is that this model works for it's purposes even when tested in different conditions it performs equally good or even better when validated. The slope coefficients of this model represent the change in the dependent variable for a one-unit increase in the corresponding predictor, holding all other predictors constant. this is why, the slope's interpretation can vary depending on the specific factors involved in the model and their coefficients. 
 
 For instance, consider the influence of the overall quality factor. As we move from a lower quality rating (e.g., 4) to a higher rating (e.g., 10), the impact on the slope may become more pronounced. This suggests that the relationship between the predictor and the dependent variable becomes increasingly influential as the overall quality improves. However, it's essential to note that the significance of the slope and its direction can vary across different scenarios, depending on the specific context and the interactions among predictor variables. Therefore, interpreting the slope requires careful consideration of the coefficients and their associated significance levels within the given regression model. It wouldn't be applicable to say that there is only one overall slope for this model, rather that they are hard to count because there are too many possible slope scenarios depending on what variables you choose to use.
 
-Let's give the model a try by using predictions and interpreting them.
+This can be proven by considering the following scenario. It will show the predictions for quality group 8 for 2000 Total sqft, and 3000 respectively:
+
+<br>
+
+```{r}
+
+pr1 <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 2000,
+    oq = 8,
+    oc1 = 8,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000))
+
+pr2 <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 3000,
+    oq = 8,
+    oc1 = 8,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000))
+
+data.frame(
+  a = "2,000",
+  b = format(round(pr1[1]), big.mark = ",", scientific = FALSE),
+  c = "3,000",
+  d = format(round(pr2[1]), big.mark = ",", scientific = FALSE)) |> 
+  kable(col.names = c("Total Sqft 1", "Selling price 1", "Total Sqft 2", "Selling price 2"))
+
+```
+
+<br>
+
+To calculate the slope of the line between this two points we use the formula $\frac{y_2 - y_1}{x_2 - x_1}$ where y is the predicted selling price and x is Total sqft; The same is represented in this code `(255818-175012)/(3000-2000)` where the result is **`r currency(round(((255818-175012)/(3000-2000)),2))`**.
+
+This can also be done by using the coefficients given in the model and multiplying them by their respective levels; Multiply the slope coefficient of bathroom:Total sqft by two if you are assuming two bathrooms, and so on for the rest. 
+
+Here is a representation of this, where b is the coefficient list ` b[9]*8 + b[10]*8 + b[11]*1 + b[12]*1 + b[13]*3 + b[14]*3 + b[15]*1 + b[16]*1` the result being **`r currency(round((b[9]*8 + b[10]*8 + b[11]*1 + b[12]*1 + b[13]*3 + b[14]*3 + b[15]*1 + b[16]*1),2))`** which becomes really close to the manual calculation done above, but this one being the most accurate one because of the involvement of the coefficients in the linear model with specifications.
+
+This is what is meant that there are multiple scenarios in where the slope can vary, but it can always be calculated if needed. As an interesting note, try summing the slope coefficients given in the model summary o this tab. A smaller slope number will result, which is being taken by R as an example and explains the coefficient for the group with the largest number of observations in the model.
+
+It's important to note that in this model, all slopes represent a dollar amount by which the selling price of a house increases with each additional total square foot of living space.
+
+Let's give the model a try by using predictions and interpreting them in the conclusion tab.
 
 <br><br>
 
@@ -448,8 +536,11 @@ pr <- predict(
     LotArea = 10000),
   interval = "prediction")
 
-colnames(pr) <- c("Predicted Sell Price", "Lower Bound", "Upper Bound")
-pander(pr)
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
 ```
 
 <br>
@@ -478,8 +569,11 @@ pr <- predict(
     LotArea = 10000),
   interval = "prediction")
 
-colnames(pr) <- c("Predicted Sell Price", "Lower Bound", "Upper Bound")
-pander(pr)
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
 ```
 
 <br>
@@ -508,8 +602,11 @@ pr <- predict(
     LotArea = 10000),
   interval = "prediction")
 
-colnames(pr) <- c("Predicted Sell Price", "Lower Bound", "Upper Bound")
-pander(pr)
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
 ```
 
 <br>
@@ -540,13 +637,16 @@ pr <- predict(
     LotArea = 10000),
   interval = "prediction")
 
-colnames(pr) <- c("Predicted Sell Price", "Lower Bound", "Upper Bound")
-pander(pr)
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
 ```
 
 <br>
 
-We can see that by adding 2,200 sqft of a house in group 10 the price jumped from 200 thousand to $440k. Which follows the trend of quality group 10.
+We can see that by adding 2,200 sqft of a house in group 10 the price jumped from 200 thousand to $440k. Which follows the trend of quality group 10. This knowledge could be use in many scenarios. One way this regression model could be of help is by adding an interactive user input process (like a shiny app) to this model so that people make inputs on many different aspects of a home and calculate their desired house selling price. They could reuse the inputs multiple times to predict house prices in a real state website (Zillow) for example. Of course the model can be bettered up and have more features. But to me this is more than enough for a couple days of work.
 
 The regression model constructed in this analysis demonstrates the significance of each included factor in predicting housing selling prices. Through careful examination of the coefficients and associated significance levels, it is evident that every factor incorporated into the model plays a meaningful role in determining the selling price of a house. It is important to recognize however, that other factors haven't been included in this model that may be significant. But to not fall into trying to over fit the data, and considering it's good use and low variability when validated, and acknowledging the significance of each predictor variable, this model can confidently be utilized as a valuable tool for pricing strategy, investment decisions, and market analysis. This analysis underscores the importance of considering a broad set of factors when evaluating housing prices, ultimately contributing to a more accurate and comprehensive understanding of the housing market.
 
@@ -555,9 +655,13 @@ The regression model constructed in this analysis demonstrates the significance 
 ## Distributions
 
 <br>
+
+Here You'll find a brief summary of a few distributions I considered to be relevant, and the reason why I added them as an explanatory factor for house prices; You can read as well how these factors come into play and how they are used in the model.
+
+<br>
 ```{r boxplot1}
-ggplot(dt, aes(bld, sp, col=as.factor(bld)))+
-  geom_boxplot(show.legend = F, fill="grey99") +
+ggplot(dt, aes(bld, sp))+
+  geom_boxplot(show.legend = F, col="grey30", fill="orange") +
   theme_bw() +
   labs(
     x="Building type",
@@ -574,8 +678,8 @@ I analyzed this boxplot to choose what Building types to include in my two categ
 <br>
 
 ```{r boxplot2}
-ggplot(dt, aes(Neighborhood, sp, col=as.factor(Neighborhood)))+
-  geom_boxplot(show.legend = F, fill="grey99") +
+ggplot(dt, aes(Neighborhood, sp))+
+  geom_boxplot(show.legend = F, col="grey30", fill="orange") +
   theme_bw() +
   labs(
     x="Neighborhood",
@@ -593,8 +697,8 @@ The same thought process was considered here. If any house was within rich neigh
 <br>
 
 ```{r boxplot 3}
-ggplot(dt, aes(SaleCondition, sp, col=as.factor(SaleCondition)))+
-  geom_boxplot(show.legend = F, fill="grey99") +
+ggplot(dt, aes(SaleCondition, sp))+
+  geom_boxplot(show.legend = F, col="grey30", fill="orange") +
   theme_bw() +
   labs(
     x="Neighborhood",
@@ -706,7 +810,7 @@ colnames(my_output_table2) <- c(
   
   "Validation Adj. $R^2$")
 
-knitr::kable(my_output_table2, escape=TRUE, digits=5)
+kable(my_output_table2, escape=TRUE, digits=5)
 ```
 
 <br>
@@ -714,6 +818,8 @@ knitr::kable(my_output_table2, escape=TRUE, digits=5)
 This double validation process will help the model to be tested in a different environment to see how it performs. As seen in the table above, the square footage model performed better than in it's initial environment, which is a good sign for the overall purpose of this analysis. 
 
 This means there is significance in the model, and that the approach to the true parameters of this data (if any), is not lost. 
+
+Validation for this model appears to have good results. Both validations worked out postively for the model at hand. The first one went down in r^2^ by .01, the second one went up by .01. It seems that the average is the model's original R^2^ of .90 which makes the model reliable.
 
 <br><br>
 
@@ -730,3 +836,5 @@ datatable(dt)
 ```
 
 <bt><br>
+
+

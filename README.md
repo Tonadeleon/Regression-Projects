@@ -1,8 +1,7 @@
-This is a compilation of my most recent works with regression models. 
+******Click on the link at the top of each .md file to see the Rendered HTML Version of each analysis.******
 
-Each folder has one .md File which are the ones that will allow you to glimpse at my analyses. The rendering is not that good (Looks funky).
-
-That's why I ******Highly Recommend clicling on the link at the top of each .md file to see the Rendered HTML Version****** for a better experience. 
+This is a compilation of my most recent works with regression models. <br>
+Each folder has one .md File which. These ones will allow you to glimpse at my analyses. The rendering is not that good (Looks funky). That's why you should check out their rendered versions (Link on each file).
 
 Here is a summary of each one of the analyses posted in this repo:
 

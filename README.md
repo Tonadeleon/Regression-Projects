@@ -4,6 +4,8 @@ Each folder has two main Files: A simple file with a link to the HTML versions o
 For a better experience Feel free to check out the HTML Versions (Better Formatting).
 My md files, will allow you to glimpse at my analyses, but the rendering is not that good (Looks funky).
 
+Here is a summary of each one of the analyses posted in this repo:
+
 1.- Spotify Regression:
         My Favorite project. I worked with raw data gathered from Spotify's API to make a significant regression model that predicts an Artist         daily Streams (Leading to daily earnings) with multiple variables. Validated with 95% confidence R^2
         

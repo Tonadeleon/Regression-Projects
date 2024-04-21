@@ -5,7 +5,7 @@ Each folder has one .md File which. These ones will allow you to glimpse at my a
 
 Here is a summary of each one of the analyses posted in this repo:
 
-1.- (Spotify Regression)[https://incomparable-kringle-69dff2.netlify.app]:
+1.- [Spotify Regression](https://incomparable-kringle-69dff2.netlify.app):
         My Favorite project. I worked with raw data gathered from Spotify's API to make a significant regression model that predicts an Artist         daily Streams (Leading to daily earnings) with multiple variables. Validated with 95% confidence R^2
         
 2.- House Prices:

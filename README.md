@@ -1,7 +1,7 @@
-******Click on the link at the top of each .md file to see the Rendered HTML Version of each analysis.******
+******Click on the links below to see my works.******
 
 This is a compilation of my most recent works with regression models. <br>
-Each folder has one .md File which. These ones will allow you to glimpse at my analyses. The rendering is not that good (Looks funky). That's why you should check out their rendered versions (Link on each file).
+Feel free to read on the descriptions below to know what the analyses go about. Click on their respectove links to take a look at them.
 
 Here is a summary of each one of the analyses posted in this repo:
 
@@ -18,7 +18,7 @@ Here is a summary of each one of the analyses posted in this repo:
 4.- [Midterm prediction](https://polite-kringle-2be27c.netlify.app):
         School Project. Predict wioth my midterm grade, my final exam grade by using past grades for a variety of years for this class.
 
-5.- Logistic Prediction:
+5.- [Logistic Prediction](https://papaya-semolina-8e58ef.netlify.app):
         School Project. Similar to Midterm Prediction, but using Logistic Regression, find the probabilities of another MATH class student of          getting an A depending on multiple variables.
 
 6.- Regression Theory:
@@ -31,4 +31,5 @@ Here is a summary of each one of the analyses posted in this repo:
         School Project. First dummy regression project. Teacher designed this assignment to be a failed regression model in order to teach             main principles. Model is later used in Theory assignment to look for key aspects on getting a better regression model.
 
 
-All of these projects are of my own making. I wrote every insight and line of code in RStudio. 
+All of these projects are of my own making. I wrote every insight and line of code in RStudio. If you want to take a look at the coding behind, go to the .Rmd files in the above folders. Pnly the first 5 analyses have a rendered html link, but you can read them in their respective folders' .md files. <br><br>
+Thanks for reading! I hope you enjoyed it.

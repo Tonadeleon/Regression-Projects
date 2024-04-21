@@ -31,5 +31,5 @@ Here is a summary of each one of the analyses posted in this repo:
         School Project. First dummy regression project. Teacher designed this assignment to be a failed regression model in order to teach             main principles. Model is later used in Theory assignment to look for key aspects on getting a better regression model.
 
 
-All of these projects are of my own making. I wrote every insight and line of code in RStudio. If you want to take a look at the coding behind, go to the .Rmd files in the above folders. Pnly the first 5 analyses have a rendered html link, but you can read them in their respective folders' .md files. <br><br>
+All of these projects are of my own making. I wrote every insight and line of code in RStudio. If you want to take a look at the coding behind, go to the .Rmd files in the above folders. Only the first 5 analyses have a rendered html links to them, but you can read their github version in their respective .md files. <br><br>
 Thanks for reading! I hope you enjoyed it.

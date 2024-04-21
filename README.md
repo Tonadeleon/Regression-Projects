@@ -15,7 +15,7 @@ Here is a summary of each one of the analyses posted in this repo:
         Interesting Project. I myself gathered all data points for this analysis from multiple sources online (Multiple Car Dealership websites)
         After Gathering almost 100 different prices for different car mileage. I'm able to predict with 90% accuracy for how much I'll be able         to sell my car for when it reaches 220k miles. (All else held constant)
 
-4.- Midterm prediction:
+4.- [Midterm prediction](https://polite-kringle-2be27c.netlify.app):
         School Project. Predict wioth my midterm grade, my final exam grade by using past grades for a variety of years for this class.
 
 5.- Logistic Prediction:

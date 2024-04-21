@@ -11,7 +11,7 @@ Here is a summary of each one of the analyses posted in this repo:
 2.- [House Prices](https://gentle-meringue-8bb3f3.netlify.app):
         Awesome Project. Huge Data set to be found in Kaggle. Managed to get a 95% confidence R^2 in my test data. This while keeping                  interpretability intact. Multiple variables and explanations in file.
 
-3.- Car Analysis:
+3.- [Car Analysis](https://zesty-kheer-8ce4a9.netlify.app):
         Interesting Project. I myself gathered all data points for this analysis from multiple sources online (Multiple Car Dealership websites)
         After Gathering almost 100 different prices for different car mileage. I'm able to predict with 90% accuracy for how much I'll be able         to sell my car for when it reaches 220k miles. (All else held constant)
 

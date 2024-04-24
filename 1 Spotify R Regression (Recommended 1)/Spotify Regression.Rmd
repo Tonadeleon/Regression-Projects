@@ -12,7 +12,7 @@ editor_options:
 
 <br>
 
-[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://incomparable-kringle-69dff2.netlify.app/)
+[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://66288a2aedcdc868da1e307d--resplendent-froyo-76d2a5.netlify.app/)
 
 <br> 
  
@@ -247,13 +247,13 @@ $$
 
 <br>
 
-The null being zero will help us test the slope of the model against it. IF the slope of this model was zero, then no correlation would be found between these two variables. A T-test will be performed to test for a significant difference between zero and the actual slope of the model. If the results are significant at the $alpha level of .05$, Then it would be safe to assume that correlation has been found between these two variables and in the model as well.
+The null being zero will help us test the slope of the model against it. IF the slope of this model was zero, then no correlation would be found between these two variables. A T-test will be performed to test for a significant difference between zero and the actual slope of the model. If the results are significant at the $\text{alpha level of .05}$, Then it would be safe to assume that correlation has been found between these two variables and in the model as well.
 
 This is a multiple linear regression. The actual model (1st graph) and their near to infinite possible scenarios are being used; From this point on in this analysis, all details for the scenario being considered will be disclosed in the different tabs of the analysis. 
 
 Continuing with the hypothesis, such can be tested by using the slope coefficient of the model summary. However, it's crucial to understand that even when there are almost infinite lines in this model, all of them share the same slope. So, for each specific scenario that we try to analyze there will be a single slope (as seen in the first graph). There's only one slope when we test monthly followers as the main predictor because all of these lines are only shifting in their intercepts.
 
-There would be different slopes if we tested a null hypothesis on the rest of the variables. Since, Monthly followers is the best predictor in this model, we will stick to it and test the null at the $.05 \ alpha \ level$.
+There would be different slopes if we tested a null hypothesis on the rest of the variables. Since, Monthly followers is the best predictor in this model, we will stick to it and test the null at the $\text{.05 alpha level}$.
 
 To start the hypothesis testing, a corresponding T value  is needed for the comparison between our selected line slope, and the slope that is being hypothesized which is of 0, meaning no correlation. After that, a P value for the slope in the model can be calculated while is tested against the null hypothesis.
  

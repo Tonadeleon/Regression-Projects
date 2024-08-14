@@ -1,7 +1,7 @@
 ******Click on the links below to see my works.******
 
 This is a compilation of my most recent works with regression models. <br>
-Feel free to read on the descriptions below to know what the analyses go about. Click on their respectove links to take a look at them.
+Feel free to read on the descriptions below to know what the analyses go about. Click on their respective links to take a look at them.
 
 Here is a summary of each one of the analyses posted in this repo:
 

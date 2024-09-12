@@ -3,22 +3,131 @@ title: "House Prices Analysis"
 author: "Tonatiuh De Leon"
 output: 
   html_document:
-    theme: cerulean
+    theme: default
     code_folding: hide
     keep_md: true
 editor_options: 
   chunk_output_type: console
 ---
 
-<br>
 
-[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://gentle-meringue-8bb3f3.netlify.app/)
+```r
+library(tidyverse)
+library(pander)
+library(gridExtra)
+library(DT)
+library(grid)
+library(knitr)
+library(formattable)
+```
 
-<br> 
+
+```r
+dt <- read_csv("train.csv") |> 
+  rename(bsm = "TotalBsmtSF",
+         `1s` = "1stFlrSF",
+         `2n` = "2ndFlrSF",
+         oq = "OverallQual",
+         sp = "SalePrice",
+         oc = "OverallCond",
+         rm ="TotRmsAbvGrd",
+         bld ="BldgType",
+         exq = "ExterQual",
+         exc = "ExterCond",
+         bdr = "BedroomAbvGr") |> 
+  mutate(tsf = `1s` + `2n` + bsm,
+         nbd = case_when(Neighborhood %in% c("StoneBr", "NridgHt", "NoRidge") ~ 1, TRUE ~ 0), 
+         tsf1 = ifelse(tsf>7500, 2567, tsf),
+         bld1 = case_when(bld %in% c("TwnhsE", "1Fam") ~ 1, TRUE ~ 0),
+         exq = as.character(exq),
+         exq = case_when(exq == "Ex" ~ 10, exq == "Gd" ~ 8, 
+                         exq == "TA" ~ 6, exq == "Fa" ~ 4, 
+                         exq == "Po" ~ 2, TRUE ~ NA_integer_),
+         exq = as.numeric(exq), 
+         exc = as.character(exc),
+         exc = case_when(exc == "Ex" ~ 10, exc == "Gd" ~ 8, 
+                                exc == "TA" ~ 6, exc == "Fa" ~ 4, 
+                                exc == "Po" ~ 2, TRUE ~ NA_integer_), 
+         exc = as.numeric(exc),
+         oq1 = case_when(oq %in% c(1,2,3, 4) ~ 4, TRUE ~ oq),
+         bdr1 = case_when(bdr > 3 ~ 1, TRUE ~ 0),
+         occ = oq+exq+exc+oc,
+         oc1 = ceiling((oq+exq+exc+oc)/4),
+         oc2 = case_when(oc1 > 6 ~ 1, TRUE ~ 0),
+         kq = as.character(KitchenQual),
+         kq = case_when(kq == "Ex" ~ 1, kq == "Gd" ~ 2, 
+                         kq == "TA" ~ 3, kq == "Fa" ~ 4, 
+                         kq == "Po" ~ 5, TRUE ~ NA_integer_),
+         kq = as.numeric(kq),
+         kq1 = case_when(kq < 3 ~ 1, TRUE ~ 0),
+         bth = BsmtFullBath+BsmtHalfBath+FullBath+HalfBath,
+         sc = case_when(SaleCondition %in% c("Partial","Alloca","Normal") ~ 1, TRUE ~ 0),
+         ht = case_when(HeatingQC == "Ex" ~ 1, HeatingQC == "Gd" ~ 2, 
+                         HeatingQC == "TA" ~ 3, HeatingQC == "Fa" ~ 4, 
+                         HeatingQC == "Po" ~ 5, TRUE ~ NA_integer_),
+         Alley = as.character(Alley),
+         al = replace_na(Alley, "no"),
+         al = case_when(al == "no" ~ 0, TRUE ~ 1),
+         al = as.numeric(al),
+         Utilities = as.character(Utilities),
+         ut = case_when(Utilities == c("AllPub","NoSewr") ~ 1, TRUE ~ 0), 
+         ut = as.numeric(ut),
+         fp = case_when(Fireplaces > 0 ~ 1, TRUE ~ 0),
+         GarageFinish = as.character(GarageFinish),
+         gr = replace_na(GarageFinish, "no"),
+         gr = case_when(gr == "no" ~ 0, TRUE ~ 1),
+         gr = as.numeric(gr),
+         PoolQC = as.character(PoolQC),
+         pl = replace_na(PoolQC, "no"),
+         pl = case_when(pl == "no" ~ 0, TRUE ~ 1),
+         pl = as.numeric(pl),
+         Fence = as.character(Fence),
+         fnc = replace_na(Fence, "no"),
+         fnc = case_when(fnc == "no" ~ 0, TRUE ~ 1),
+         fnc = as.numeric(fnc))
+
+dt10 <- dt |> 
+  filter(oq1 == 10)
+
+dt9 <- dt |> 
+  filter(oq1 == 9)
+
+dt8 <- dt |> 
+  filter(oq1 == 8)
+
+dt7 <- dt |> 
+  filter(oq1 == 7)
+
+dt6 <- dt |> 
+  filter(oq1 == 6)
+
+dt5 <- dt |> 
+  filter(oq1 == 5)
+
+dt4 <- dt |> 
+  filter(oq1 == 4)
+
+dtg <- dt |> 
+  rename(`Overall Quality` = oq1) |> 
+  group_by(`Overall Quality`) |> 
+  summarise(
+    `Lot Area` = round(mean(LotArea)),
+    `Neighborhoods` = round(mean(nbd)),
+    #`Overall Quality` = round(mean(oc1)),
+    `Building Type` = round(mean(bld1)),
+    `Kitchen Quality` = round(mean(kq)),
+    `Bathrooms` = round(mean(bth)),
+    `Bedrooms` = round(mean(bdr)),
+    `Sale Condition` = round(mean(sc)),
+    `Heating Quality` = round(mean(ht)),
+    `Garage` = round(mean(gr)),
+    `fireplace` = round(mean(fp))) |> 
+  arrange(desc(`Overall Quality`))
 
 
-
-
+mylm <- lm(sp ~  nbd + tsf1:oq + tsf1:oc1 + tsf1:nbd + bld1 + tsf1:kq + tsf1:bth + bdr + tsf1:bdr + sc + tsf1:ht + al + gr + tsf1:fp + LotArea , data=dt)
+b <- coef(mylm)
+```
 
 #  {.tabset .tabset-pills .tabset-fade}
 
@@ -28,25 +137,254 @@ editor_options:
 
 #### Introduction
 
+
+```r
+g10 <- ggplot(dt10, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="red", fill="white") +
+  
+  scale_y_continuous(breaks = c(200000, 400000, 600000), labels=c("$200k","$400k","$600k"))+
+  
+  scale_x_continuous(breaks = c(3000, 4000, 5000, 6000, 7000), labels = c("3,000", "4,000", "5,000", "6,000", "7,000"))+
+  
+  stat_function(fun=function(x, oq1=10)
+
+    (b[1]#int
+     + b[2]*mean(dt10$nbd)#nbd
+     + b[3]*mean(dt10$bld1)#building type
+     + b[4]*3#bedr
+     + b[5]*mean(dt10$sc)#sc
+     + b[6]*mean(dt10$al)#alley
+     + b[7]*mean(dt10$gr)#gara
+     + b[8]*mean(dt10$LotArea)) +
+
+    (b[9]*10 #oq
+     + b[10]*10 #oc1
+     + b[11]*mean(dt10$nbd) #nbd
+     + b[12]*mean(dt10$kq) #kq
+     + b[13]*2 #bath
+     + b[14]*3 #bdr
+     + b[15]*mean(dt10$ht) #ht
+     + b[16]*mean(dt10$fp) #fp
+     )*x, col="red") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 10", 
+    subtitle = "20,000 ft Lot, all good quality factors, avg of 3 bedrooms, 2 bathrooms.",
+    x= "",
+    y = "") +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+  
+
+g9 <- ggplot(dt9, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="purple", fill="white") +
+  
+  scale_y_continuous(breaks = c(300000, 400000, 500000, 600000), labels=c("$300k","$400k","$500k","$600k"))+
+  
+  scale_x_continuous(breaks = c(3000, 3500, 4000, 4500, 5000), labels = c("3,000", "3,500", "4,000", "4,500", "5,000"))+
+  
+  stat_function(fun=function(x, oq1=9)
+
+    (b[1] + b[2]*1 + b[3]*1 + b[4]*3 + b[5]*1 + b[6]*1 + b[7]*1 + b[8]*13500) +
+
+    (b[9]*oq1 + b[10]*oq1 + b[11]*1 + b[12]*1 + b[13]*2 + b[14]*3 + b[15]*1 + b[16]*1)*x, col="purple") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 9", 
+    subtitle = "15,000 ft Lot, all good quality factors, avg of 3 bedrooms, 2 bathrooms.",
+    x = "",
+    y = "")  +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+g8 <- ggplot(dt8, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="steelblue", fill="white") +
+  
+  scale_y_continuous(breaks = c(200000, 300000, 400000, 500000), labels=c("$200k","$300k", "$400k","$500k"))+
+  
+  scale_x_continuous(breaks = c( 2000, 3000, 4000, 5000, 6000), labels = c("2,000", "3,000", "4,000", "5,000", "6,000"))+
+  
+  stat_function(fun=function(x, oq1=8)
+
+    (b[1] + b[2]*1 + b[3]*1 + b[4]*3 + b[5]*1 + b[6]*1 + b[7]*1 + b[8]*10000) +
+
+    (b[9]*oq1 + b[10]*oq1 + b[11]*1 + b[12]*1 + b[13]*2 + b[14]*3 + b[15]*1 + b[16]*1)*x, col="steelblue") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 8", 
+    x = "",
+    y = "",
+    subtitle = "12,000 ft Lot, all good quality factors, avg of 3 bedrooms, 2 bathrooms.") +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+
+g7 <- ggplot(dt7, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="orange", fill="white") +
+  
+  scale_y_continuous(breaks = c(100000, 200000, 300000, 400000), labels=c("$100k","$200k","$300k","$400k"))+
+  
+  scale_x_continuous(breaks = c( 2000, 3000, 4000, 5000), labels = c("2,000", "3,000", "4,000", "5,000"))+
+  
+  stat_function(fun=function(x, oq1=7)
+
+    (b[1] + b[2]*1 + b[3]*1 + b[4]*3 + b[5]*1 + b[6]*1 + b[7]*1 + b[8]*11000) +
+
+    (b[9]*oq1 + b[10]*oq1 + b[11]*1 + b[12]*1 + b[13]*2 + b[14]*3 + b[15]*1 + b[16]*1)*x, col="orange") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 7", 
+    x = "",
+    y = "",
+    subtitle = "10,000 ft Lot, all good quality factors, avg of 2 bedrooms, 2 bathrooms.") +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+g6 <- ggplot(dt6, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="forestgreen", fill="white") +
+  
+  scale_y_continuous(breaks = c(100000, 150000, 200000, 250000, 300000), labels=c("$100k", "$150k", "$200k", "$250k","$300k"))+
+  
+  scale_x_continuous(breaks = c( 1000, 2000, 3000, 4000), labels = c("1,000", "2,000", "3,000", "4,000"))+
+  
+  stat_function(fun=function(x, oq1=6)
+
+    (b[1] + b[2]*1 + b[3]*1 + b[4]*3 + b[5]*1 + b[6]*1 + b[7]*1 + b[8]*10000) +
+
+    (b[9]*oq1 + b[10]*oq1 + b[11]*1 + b[12]*1 + b[13]*2 + b[14]*3 + b[15]*1 + b[16]*1)*x, col="forestgreen") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 6", 
+    x = "",
+    y = "",
+    subtitle = "10,000 ft Lot, all good quality factors, avg of 2 bedrooms, 2 bathrooms.") +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+g5 <- ggplot(dt5, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="brown", fill="white") +
+  
+  scale_y_continuous(breaks = seq(50000,250000, by=50000), labels=c("$50k", "$100k", "$150k", "$200k", "$250k"))+
+  
+  scale_x_continuous(breaks = c( 1000, 2000, 3000, 4000), labels = c("1,000", "2,000", "3,000", "4,000"))+
+  
+  stat_function(fun=function(x, oq1=5)
+
+    (b[1] + b[2]*1 + b[3]*1 + b[4]*3 + b[5]*1 + b[6]*1 + b[7]*1 + b[8]*10000) +
+
+    (b[9]*oq1 + b[10]*oq1 + b[11]*1 + b[12]*1 + b[13]*2 + b[14]*3 + b[15]*1 + b[16]*1)*x, col="brown") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 5", 
+    x = "",
+    y = "",
+    subtitle = "10,000 ft Lot, all good quality factors, avg of 2 bedrooms, 2 bathrooms.") +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+g4 <- ggplot(dt4, aes(tsf1,sp))+
+  
+  geom_point(cex=.9, col="cyan4", fill="white") +
+  
+  scale_y_continuous(breaks = seq(50000,250000, by=50000), labels=c("$50k", "$100k", "$150k", "$200k", "$250k"))+
+  
+  scale_x_continuous(breaks = c( 1000, 2000, 3000), labels = c("1,000", "2,000", "3,000"))+
+  
+  stat_function(fun=function(x, oq1=4)
+
+    (b[1] + b[2]*1 + b[3]*1 + b[4]*3 + b[5]*1 + b[6]*1 + b[7]*1 + b[8]*8000) +
+
+    (b[9]*oq1 + b[10]*oq1 + b[11]*1 + b[12]*1 + b[13]*2 + b[14]*3 + b[15]*1 + b[16]*1)*x, col="cyan4") +
+  
+  theme_classic() +
+  
+  labs( 
+    title = "House Rating: 4", 
+    x = "",
+    y = "",
+    subtitle = "8,000 ft Lot, all good quality factors, avg of 1 bedrooms, 2 bathrooms.") +
+  
+  theme(
+    plot.title = element_text(size=12, color = "grey5"),
+    axis.text.x = element_text(color = "grey25"),
+    axis.text.y = element_text(color = "grey25"),
+    plot.subtitle = element_text(color = "grey25",   size=9))
+
+
+grid.arrange(g10, g9, g8, g7, g6, g5, g4,
+             ncol = 2, nrow = 4,
+             top = textGrob("House Selling Prices", gp = gpar(fontsize = 14, col = "black")),
+             left = textGrob("Selling Prices (Thousands)", rot = 90, gp = gpar(fontsize = 14)),
+             bottom = textGrob("Total Square Footage", gp = gpar(fontsize = 14))
+             )
+```
+
 ![](House-Prices-Analysis_files/figure-html/plot-1.png)<!-- -->
 
 <br> <br>
 
-This analysis helps in considering the possibility that there are multiple factors driving the differences in selling prices for a house. The survey data set to which this regression model was applied can be found in [Kaggle](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data) as one of their real world surveys (See Data Set tab to explore all the possible variables).
+$$ \text{Model Equation:} \\\ \ \text{Selling Price}_{y_i} = b_0 \ + \text{Neighborhood}_{b_1} + \text{Has Alley}_{b_2} + \text{Has Garage}_{b_3} + \\\ \ \text{Number of Bedrooms}_{b_4} + \text{Building Type}_{b_5} + \text{Sale Condition}_{b_6} + \text{Lot Area}_{b_7} + \\\ \ \text{Total Square Feet} \cdot \text{Overall Quality}_{b_8} + \text{Total Square Feet} \cdot \text{Average Quality}_{b_9} + \\\ \ \text{Total Square Feet} \cdot \text{Neighborhood}_{b_{10}} + \text{Total Square Feet} \cdot \text{Kitchen Quality}_{b_{11}} + \\\ \ \text{Total Square Feet} \cdot \text{Number of Bathrooms}_{b_{12}} + \\\ \ \text{Total Square Feet} \cdot \text{Number of Bedrooms}_{b_{13}} + \\\ \ \text{Total Square Feet} \cdot \text{Heating System Quality}_{b_{14}} + \\\ \ \text{Total Square Feet} \cdot \text{Has Fireplace}_{b_{15}}$$
 
-I created a ranking system for the houses in the survey based on the amount of factors and utilities it includes, as well as their quality. This is a single model that supposes that a good quality house should include the most of many factors driving their selling prices in it and have the best quality possible. This way a House can be considered of good quality taking it to higher rankings; for example a good sized Lot Area in the house, a good quality kitchen, average or higher number of bedrooms, among other variables. This line of thought is the basis of my current model. The graph was divided per each house rating group from 4-10 to visually see the difference in a 2D graph. (Groups 1-3 weren't as significant so, I added them with group 4).
+<br>
 
-When analyzing the graphs consider their differences at their x and y axis. Looking at them from left to right, top to bottom; We see that quality 10 houses are generally larger in total square footage and are sold by much more than the other types of quality homes. this could also be said about rank 9, however at rank 8 we see a significant drop in maximum selling price as seen in its Y axis as compared to the previous graphs. This means that as the houses start to get lower in quality, and in size, their selling prices become smaller as well. These graphs are also only a simple representation of multiple slices of this regression model that align to the scenarios depicted on each of the subtitles. These scenarios represent the average factor per quality rating. How can we tell if a house is of good quality? We may need to consider many factors and put them at play in this regression model. 
+This analysis helps consider the possibility that there are multiple factors driving the differences in selling prices for a house. The survey data set to which this regression model was applied can be found on [Kaggle](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data) as one of their real-world surveys (See Data Set tab to explore all the possible variables).
 
-Consider reading further in the explanatory variables and model summary tabs for deeper understanding on how this model works.
+I created a ranking system for the houses in the survey based on the number of factors and utilities they include, as well as their quality. This is a single model that assumes a good-quality house should include as many of the factors driving its selling prices as possible and have the best quality. This way, a house can be considered of good quality, leading to higher rankings; for example, a good-sized lot area, a good-quality kitchen, an average or higher number of bedrooms, among other variables. This line of thought is the basis of my current model. The graph was divided by each house rating group from 4 to 10 to visually see the difference in a 2D graph. (Groups 1-3 weren’t as significant, so I added them with group 4).
+
+When analyzing the graphs, consider the differences in their x and y axes. Looking at them from left to right, top to bottom, we see that quality 10 houses are generally larger in total square footage and are sold for much more than the other types of quality homes. This could also be said about rank 9; however, at rank 8, we see a significant drop in maximum selling price, as seen in its y-axis compared to the previous graphs. This means that as the houses start to get lower in quality and size, their selling prices become smaller as well. These graphs are a simple representation of multiple slices of this regression model that align with the scenarios depicted in each of the subtitles. These scenarios represent the average factor per quality rating. How can we tell if a house is of good quality? We may need to consider many factors and bring them into play in this regression model.
+
+Consider reading further in the Explanatory Variables and Model Summary tabs for a deeper understanding of how this model works.
 
 <br><br>
 
 #### Explanatory Variables
 
-Now, what explanatory variables were used for this model? If we consider a house gains it's value depending on multiple factors, then there are multiple explanatory variables that could be used to get a regression model to predict house selling prices.
+Now, what explanatory variables were used for this model? If we consider a house gains its value depending on multiple factors, then there are multiple explanatory variables that could be used to get a regression model to predict house selling prices.
 
-The most clear ones would be:
+The clearest ones would be:
 
 <br>
 
@@ -76,7 +414,7 @@ Then there may be others that could appear to not be as obvious, but by using re
 
 10. <span style="color: #0047AB;">Location (Specifically the type of neighborhood the house is in; a measurement of rich neighborhoods as per seen in the distributions of the houses [Distributions Tab, Fig 2] made it to the final model)</span>
 
-11. <span style="color: #0047AB;">Sale Condition (More regular types of deals tend to be a factor of selling prices; for example a sell between two completely separate parties through a real state agency as opposed to a family type of deal where the house is sold between family members [Distributions Tab, Fig 3])</span>
+11. <span style="color: #0047AB;">Sale Condition (More regular types of deals tend to be a factor of selling prices; for example a sale between two completely separate parties through a real state agency as opposed to a family type of deal where the house is sold between family members [Distributions Tab, Fig 3])</span>
 
 12. <span style="color: #0047AB;">Lot Area of the property is an important factor to consider.</span>
 
@@ -94,7 +432,7 @@ Finally we have a couple of factors that appear to be significant when consideri
 
 <br>
 
-When used in the final model, all of these variables are significant and contribute (even if too little) to the final predictive model used for this data set. However this doesn't mean that these are the only ones that should be included in the model.
+When used in the final model, all of these variables are significant and contribute (even if too little) to the final predictive model used for this data set. However, this doesn't mean that these are the only ones that should be included in the model.
 
 <br> <br>
 
@@ -102,9 +440,18 @@ When used in the final model, all of these variables are significant and contrib
 
 <br>
 
-$$ Math \ Equation \ and \ Model \ Summary \:  \\\ \\\ \ Selling \ Price_i = Neighborhood_i + Has \ Alley_i + Has \ Garage_i + Number \ of \ Bedrooms_i +  Building \ Type_i + \\ \ Sale \ Condition_i + Lot \ Area_i + Total \ Square \ Feet_i \cdot Overall \ Quality_i + Total \ Square \ Feet_i \cdot Average \ Quality_i + \\ \ Total \ Square \ Feet_i \cdot Neighborhood_i + Total \ Square \ Feet_i \cdot Kitchen_i \ Quality_i + Total \ Square \ Feet_i \cdot Number \ of \ Bathrooms_i + \\ \ Total \ Square \ Feet_i \cdot Number \ of \ Bedrooms_i + Total \ Square \ Feet_i \cdot Heating \ System \ Quality_i + Total \ Square \ Feet_i \cdot Has \ Fireplace_i$$
 
-<br>
+```r
+cap <- paste(
+  "nbd = Neighborhood | bld1 = Building Type | bdr = Number of Bedrooms |",
+  "sc = Sell Condition | al = Alley Included | gr = Garage Quality |",
+  "tsf1 = Total Square Foot Sum | oq = Overall Quality | oc1 = Average Quality Overall |",
+  "kq = Kitchen Quality | bth = Number of Bathrooms | ht = Heating System Quality |",
+  "fp = Fireplace Quality",
+  sep = "\n")
+
+pander(summary(mylm), caption = cap)
+```
 
 
 ---------------------------------------------------------------
@@ -157,15 +504,64 @@ kq = Kitchen Quality | bth = Number of Bathrooms | ht = Heating System Quality |
 fp = Fireplace Quality
 
 <br>
-With all of these factors in mind, and by adding some interaction terms between these factors and our quantitative variable (Total Square Feet), we get to this final model. I consider it to be significant because of the significance in its terms (all significant terms at .05 alpha level), a considerable R^2^ of .90, and an even better validation R^2^ of .91 that came in place by using the mathematical regression equation presented above to predict Y which in this case is house selling prices; Where all of this variables can be modified to predict for specific types of homes and multiple different scenarios (See conclusion and interpretation tab).
+With all of these factors in mind, and by adding interaction terms between these factors and our quantitative variable (Total Square Feet), we arrive at this final model. This model can be considered relevant because of the significance of its terms (all significant at the 0.05 alpha level), a considerable R^2^ of 0.90, and an even better validation R^2^ of 0.91. Thus achieving high accuracy when predicting house selling prices. Also, the use cases are many since all of these variables can be modified to predict for specific types of homes and multiple different scenarios (see Conclusion and Interpretation tab).
 
-With a Residual Standard Error of $25,000 this model comes closer to being more accurate than previous ones I tried. My claim is that this model works for it's purposes even when tested in different conditions it performs equally good or even better when validated. The slope coefficients of this model represent the change in the dependent variable for a one-unit increase in the corresponding predictor, holding all other predictors constant. this is why, the slope's interpretation can vary depending on the specific factors involved in the model and their coefficients. 
+With a Residual Standard Error of $25,000, this model comes closer to being more accurate than previous ones I tried. My claim is that this model works for its purposes; even when tested in different conditions, it performs equally well or even better when validated. The slope coefficients of this model represent the change in the dependent variable for a one-unit increase in the corresponding predictor, holding all other predictors constant. This is why the slope’s interpretation can vary depending on the specific factors involved in the model and their coefficients.
 
-For instance, consider the influence of the overall quality factor. As we move from a lower quality rating (e.g., 4) to a higher rating (e.g., 10), the impact on the slope may become more pronounced. This suggests that the relationship between the predictor and the dependent variable becomes increasingly influential as the overall quality improves. However, it's essential to note that the significance of the slope and its direction can vary across different scenarios, depending on the specific context and the interactions among predictor variables. Therefore, interpreting the slope requires careful consideration of the coefficients and their associated significance levels within the given regression model. It wouldn't be applicable to say that there is only one overall slope for this model, rather that they are hard to count because there are too many possible slope scenarios depending on what variables you choose to use.
+For instance, consider the influence of the overall quality factor. As we move from a lower quality rating (e.g., 4) to a higher rating (e.g., 10), the impact on the slope becomes more pronounced. This suggests that the relationship between the predictor and the dependent variable becomes increasingly influential as the overall quality improves. However, it is essential to note that the significance of the slope and its direction can vary across different scenarios, depending on the specific context and the interactions among predictor variables. Therefore, interpreting the slope requires careful consideration of the coefficients and their associated significance levels within the given regression model. It wouldn’t be accurate to say that there is only one overall slope for this model; rather, they are hard to count because there are too many possible slope scenarios depending on which variables you choose to use.
 
-This can be proven by considering the following scenario. It will show the predictions for quality group 8 for 2000 Total sqft, and 3000 respectively:
+This can be proven by considering the following scenario. It will show the predictions for quality group 8 for 2000 total square feet and 3000 total square feet, respectively:
+
+
 
 <br>
+
+
+```r
+pr1 <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 2000,
+    oq = 8,
+    oc1 = 8,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000))
+
+pr2 <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 3000,
+    oq = 8,
+    oc1 = 8,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000))
+
+data.frame(
+  a = "2,000",
+  b = format(round(pr1[1]), big.mark = ",", scientific = FALSE),
+  c = "3,000",
+  d = format(round(pr2[1]), big.mark = ",", scientific = FALSE)) |> 
+  kable(col.names = c("Total Sqft 1", "Selling price 1", "Total Sqft 2", "Selling price 2"))
+```
+
 
 
 |Total Sqft 1 |Selling price 1 |Total Sqft 2 |Selling price 2 |
@@ -195,6 +591,35 @@ Consider this next prediction of an imaginary house with 10,000 sqft lot area, 2
 <br>
 
 
+```r
+pr <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 2000,
+    oq = 10,
+    oc1 = 10,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000),
+  interval = "prediction")
+
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
+```
+
+
+
 | Predicted Selling Price| Lower Bound| Upper Bound|
 |-----------------------:|-----------:|-----------:|
 |             $206,480.00| $155,840.00| $257,120.00|
@@ -204,6 +629,35 @@ Consider this next prediction of an imaginary house with 10,000 sqft lot area, 2
 Now try to match 2000 sqft (x axis) in quality rating 10 group with it's regression line in the main graph; You can see it's around the predicted value. But what happens if we change overall quality to rating 7? Let's see.
 
 <br>
+
+
+```r
+pr <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 2000,
+    oq = 7,
+    oc1 = 7,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000),
+  interval = "prediction")
+
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
+```
+
 
 
 | Predicted Selling Price| Lower Bound| Upper Bound|
@@ -217,6 +671,35 @@ The predicted value changed so much that the house price dropped by almost 50 th
 <br>
 
 
+```r
+pr <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 2000,
+    oq = 7,
+    oc1 = 7,
+    bld1 = 1,
+    kq = 5,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000),
+  interval = "prediction")
+
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
+```
+
+
+
 | Predicted Selling Price| Lower Bound| Upper Bound|
 |-----------------------:|-----------:|-----------:|
 |             $122,740.00|  $72,017.00| $173,463.00|
@@ -228,6 +711,35 @@ Just by changing a simple variable like kitchen quality another $40k were lost. 
 The model can show as well the best case scenarios for a house. For example let's go back to the first prediction, and only change the footage of the building from 2000 to the average square footage of rating group 10 (4400 ft)
 
 <br>
+
+
+```r
+pr <- predict(
+  mylm,
+  newdata = data.frame(
+    nbd = 1,
+    tsf1 = 4400,
+    oq = 10,
+    oc1 = 10,
+    bld1 = 1,
+    kq = 1,
+    bth = 2,
+    bdr = 3,
+    sc = 1,
+    ht = 1,
+    al = 1,
+    gr = 1,
+    fp = 1,
+    LotArea = 10000),
+  interval = "prediction")
+
+data.frame(
+  a = currency(round(pr[1])),
+  b = currency(round(pr[2])),
+  c = currency(round(pr[3]))) |> 
+  kable(col.names = c("Predicted Selling Price", "Lower Bound", "Upper Bound"))
+```
+
 
 
 | Predicted Selling Price| Lower Bound| Upper Bound|
@@ -249,6 +761,19 @@ The regression model constructed in this analysis demonstrates the significance 
 Here You'll find a brief summary of a few distributions I considered to be relevant, and the reason why I added them as an explanatory factor for house prices; You can read as well how these factors come into play and how they are used in the model.
 
 <br>
+
+```r
+ggplot(dt, aes(bld, sp))+
+  geom_boxplot(show.legend = F, col="grey30", fill="orange") +
+  theme_bw() +
+  labs(
+    x="Building type",
+    y="Selling Price",
+    title = "Figure 1",
+    subtitle = "Selling Price Vs Building Type"
+  )
+```
+
 ![](House-Prices-Analysis_files/figure-html/boxplot1-1.png)<!-- -->
 
 <br>
@@ -257,6 +782,20 @@ I analyzed this boxplot to choose what Building types to include in my two categ
 
 <br>
 
+
+```r
+ggplot(dt, aes(Neighborhood, sp))+
+  geom_boxplot(show.legend = F, col="grey30", fill="orange") +
+  theme_bw() +
+  labs(
+    x="Neighborhood",
+    y="Selling Price",
+    subtitle = "Selling Price Vs Neighborhood",
+    title="Figure 2"
+  ) +
+  theme(axis.text.x = element_text(angle = 35, size=6))
+```
+
 ![](House-Prices-Analysis_files/figure-html/boxplot2-1.png)<!-- -->
 
 <br>
@@ -264,6 +803,20 @@ I analyzed this boxplot to choose what Building types to include in my two categ
 The same thought process was considered here. If any house was within rich neighborhoods (StoneBr, NridgHt, NoRidge) they would be considered above others. So my neighborhood variable helps with that and was proven to be a significant variable in this model. See how these neighborhoods are above all the others and their quantiles surpass the rest. this means houses in these locations are of importance and higher prices.
 
 <br>
+
+
+```r
+ggplot(dt, aes(SaleCondition, sp))+
+  geom_boxplot(show.legend = F, col="grey30", fill="orange") +
+  theme_bw() +
+  labs(
+    x="Neighborhood",
+    y="Selling Price",
+    subtitle = "Selling Price Vs Sale Condition",
+    title="Figure 2"
+  ) +
+  theme(axis.text.x = element_text(angle = 0, size=8))
+```
 
 ![](House-Prices-Analysis_files/figure-html/boxplot 3-1.png)<!-- -->
 
@@ -277,19 +830,33 @@ Here the variable was a little different to determine, however the boxplot helpe
 ## Diagnostic Plots
 
 <br>
+
+```r
+par(mfrow=c(1,2))
+plot(mylm,which=1)
+plot(mylm$residuals)
+```
+
 ![](House-Prices-Analysis_files/figure-html/diagnostic1-1.png)<!-- -->
 
 <br>
 
-Diagnostic plots don't look too promising. Variance has the appearance of being inconstant, but that may or may not be the case. Because of all the other factors (significance in the model, good validation) we will proceed with the analysis.
+Diagnostic plots look somewhat ok. Variance has the appearance of being inconstant, but it can be inconclusive. Because of all the other factors (large sample size, significance in the model, good validation) we will proceed with the analysis.
 
 <br>
+
+
+```r
+par(mfrow=c(1,2))
+plot(mylm,which=2)
+hist(dt$tsf1, xlab="", xaxt='n', yaxt='n', main="Total Squared Footage", col="firebrick")
+```
 
 ![](House-Prices-Analysis_files/figure-html/diagnostic2-1.png)<!-- -->
 
 <br>
 
-Normality however, can't be denied to be abnormal. It has more of a heavy tailed, left skewed distribution (not helpful for analysis). But because normality is is the least of the problems when running diagnostics, we will still continue to test the data with this model. 
+Normality however, can't be denied to be abnormal. It has more of a heavy tailed, right skewed distribution (not helpful for analysis). As mentioned in the paragraph above, we have many reasons to still continue with the analysis. 
 
 As a note, I did try transforming the data, however I did not find any significance by doing so. That may have helped to make these diagnostics look better.
 
@@ -298,6 +865,71 @@ As a note, I did try transforming the data, however I did not find any significa
 ## Validations
 
 <br>
+
+
+```r
+set.seed(13)
+
+num_rows <- 1000 #1460 total
+keep <- sample(1:nrow(dt), num_rows)
+
+mytrain <- dt[keep, ]
+
+mylm <- lm(sp ~  nbd + tsf1:oq + tsf1:oc1 + tsf1:nbd + bld1 + tsf1:kq + tsf1:bth + bdr + tsf1:bdr + sc + tsf1:ht + al + gr + tsf1:fp + LotArea , data=mytrain)
+
+mytest <- dt[-keep, ] #Use this in the predict(..., newdata=mytest)
+
+  yhcc <- predict(mylm, newdata=mytest)
+  ybarcc <- mean(mytest$sp) 
+  SSTOcc <- sum( (mytest$sp - ybarcc)^2 )
+  SSEcc <- sum( (mytest$sp - yhcc)^2 )
+  rscc <- 1 - SSEcc/SSTOcc
+  n <- length(mytest$sp) #sample size
+  pcc  <- length(coef(mylm)) #num. parameters in model
+  rscca <- 1 - (n-1)/(n-pcc)*SSEcc/SSTOcc
+  
+my_output_table2 <- data.frame(
+  
+  Model = c(
+    
+    "Square Footage Model"),
+  
+  `Original R2` = c(
+    
+    summary(mylm)$r.squared),
+    
+    #summary(bsalm)$r.squared), 
+  
+  `Orig. Adj. R-squared` = c(
+    
+    summary(mylm)$adj.r.squared),
+    
+    #summary(bsalm)$adj.r.squared,
+
+  
+  `Validation R-squared` = c(
+    
+    rscc),
+  
+  `Validation Adj. R^2` = c(
+    
+    rscca))
+
+
+
+colnames(my_output_table2) <- c(
+  
+  "Model", "Original $R^2$", 
+  
+  "Original Adj. $R^2$", 
+  
+  "Validation $R^2$", 
+  
+  "Validation Adj. $R^2$")
+
+kable(my_output_table2, escape=TRUE, digits=5)
+```
+
 
 
 |Model                | Original $R^2$| Original Adj. $R^2$| Validation $R^2$| Validation Adj. $R^2$|
@@ -310,7 +942,7 @@ This double validation process will help the model to be tested in a different e
 
 This means there is significance in the model, and that the approach to the true parameters of this data (if any), is not lost. 
 
-Validation for this model appears to have good results. Both validations worked out postively for the model at hand. The first one went down in r^2^ by .01, the second one went up by .01. It seems that the average is the model's original R^2^ of .90 which makes the model reliable.
+Validation for this model appears to have good results. Both validations worked out positively for the model at hand. The first one went down in R^2^ by .01, the second one went up by .01. It seems that the average is the model's original R^2^ of .90 which makes the model reliable.
 
 <br><br>
 
@@ -322,6 +954,10 @@ The data table for this regression model originally had less columns. I mutated 
 
 <bt><br>
 
+
+```r
+datatable(dt)
+```
 
 ```{=html}
 <div class="datatables html-widget html-fill-item" id="htmlwidget-6c9e892d87d379853fc7" style="width:100%;height:auto;"></div>

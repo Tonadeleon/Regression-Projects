@@ -9,14 +9,8 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-
-<br>
-
-[<span style="font-size: larger;">CLICK HERE TO SEE RENDRED HTML VERSION (Better Format)</span>](https://66288a2aedcdc868da1e307d--resplendent-froyo-76d2a5.netlify.app/)
-
-<br> 
  
-```{r setup, include=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 #library(devtools)
 #library('spotifyr')
@@ -32,7 +26,7 @@ library(formattable)
 library(DT)
 ```
  
-```{r  current model, message=FALSE, warning=FALSE, echo=FALSE}
+```{r  current model}
  
 Sys.setenv(SPOTIFY_CLIENT_ID = '857bab10601a4bc2af19d359336d3af7')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = 'f36a14960bc445fba551b36f3b65cd65')
@@ -155,9 +149,7 @@ mylm <- lm((daily1) ~
              
              (artist_streams) + 
              
-             (streams) + 
-             
-             daily 
+             (streams)
              
              
 , dt)
@@ -179,59 +171,68 @@ b <-(coef(mylm))
  
 <br>
  
-```{r graphs actual, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r graphs actual, fig.width=10, fig.width=10, fig.align='center'}
 
  
 ggplot(dt, aes(y=(daily1), x=(monthly_listeners)))+
   geom_point(show.legend = F, col="orange")+
   #geom_smooth( col="skyblue", method = "lm", formula = "(y)~(x)")+
   
-     stat_function(fun=function(x)
-
-      (b[1] + b[2]*0 + b[4]*8.156 + b[5]*20.17 + b[6]*12.49) +
-
-      (b[3])*x, linewidth =1, col="skyblue")+
-
-     stat_function(fun=function(x)
-
-      (b[1] + b[2]*0 + b[4]*9.030 + b[5]*20.55 + b[6]*12.94) +
-
-      (b[3])*x, linewidth =1, col="skyblue3")+
-
-     stat_function(fun=function(x)
-
-      (b[1] + b[2]*0 + b[4]*9.916 + b[5]*20.86 + b[6]*13.45) +
-
-      (b[3])*x, linewidth =1, col="steelblue4")+
+  annotate("text", x = log(50000000-5000000), y = log(.75), 
+           label = "Subset being measured:", color = "grey35", hjust = -0.1, size=3.2) +
   
-  scale_x_continuous(breaks = c(log(4500000), log(10000000), log(25000000), log(50000000), log(100000000)), labels=c("4.5 M","10 M","25 M","50 M" ,"100 M")) +
+  stat_function(fun = function(x) 
+    (b[1] + b[2] * 0 + b[4] * 8.156 + b[5] * 20.17) + 
+    (b[3]) * x, linewidth = 1, col = "skyblue1") +
+  annotate("text", x = log(50000000-1000000), y = log(.38), 
+           label = "2nd Quartile", color = "skyblue1", hjust = -0.1, size=3.2) +
+
+  stat_function(fun = function(x) 
+    (b[1] + b[2] * 0 + b[4] * 9.030 + b[5] * 20.55) + 
+    (b[3]) * x, linewidth = 1, col = "skyblue3") +
+  annotate("text", x = log(50000000-500000), y = log(.48), 
+           label = "Median", color = "skyblue3", hjust = -0.1, size=3.2) +
+
+  stat_function(fun = function(x) 
+    (b[1] + b[2] * 0 + b[4] * 9.916 + b[5] * 20.86) + 
+    (b[3]) * x, linewidth = 1, col = "steelblue4") +
+  annotate("text", x = log(50000000-1000000), y = log(.6), 
+           label = "3rd Quartile", color = "steelblue4", hjust = -0.1, size=3.2) +
   
-   scale_y_continuous(breaks = c(log(.5), log(1.5), log(6), log(20), log(70)), labels=c(".5 M","1.5 M","6 M","20 M" ,"70 M"))+
- 
+  scale_x_continuous(breaks = c(log(4500000), log(10000000), log(25000000), log(50000000), log(100000000)), 
+                     labels = c("4.5 M", "10 M", "25 M", "50 M" ,"100 M")) +
+  scale_y_continuous(breaks = c(log(.5), log(1.5), log(6), log(20), log(70)), 
+                     labels = c(".5 M", "1.5 M", "6 M", "20 M" ,"70 M")) +
   theme_classic() +
   labs( 
     title = "Artist Monthly Followers vs. Artist Daily Streams", 
-    subtitle = "From lightest to darkest: Linear representation where all factors meet their\n 1st quartile, Median and 3rd quartile",
+    subtitle = "These lines represent a 2D version of the actual high dimensional model",
     x= "Artist Monthly Followers",
     y = "Artist Daily Streams",
     caption= "Log scale") +
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 14, color = "grey15"),
+    axis.text.x = element_text(color = "grey35", size = 10),
+    axis.text.y = element_text(color = "grey35", size = 10),
+    plot.subtitle = element_text(color = "grey35", size = 11),
+    axis.title = element_text(color = "grey15", size = 12))
 ```
 
 <br>
 
-$$ \text{Math equation:} \\\ \\  \text{Artist Daily Streams} = \text{Monthly followers} + \text{Explicit} + \text{Artist streams} + \text{All time streams per song} + \text{Daily song streams} $$
+$$ \text{Regression Equation :} \\\ \\  \text{Artist Daily Streams}_{Y_i} = \\\ \ \text{b0} + \text{Monthly followers}_{b_1} + \text{Explicit (or not)}_{b_2} + \text{All time artist streams}_{b_3} + \\\ \ \text{All time streams per song}_{b_4} $$
 
 <br>
- 
-This analysis explains the relationship between daily streams an artist can have on Spotify; Because Spotify does not share all their information to public, only some variables were available to perform a regression model on this data. This is why more research was needed in order to find variables. By looking up related Spotify data I came across with data that not only had information on how the song was made (duration, decibel levels, etc..), but it also had Monthly followers for more than 3000 artists as well as daily streamings, and other interesting variables.(See model selection tab) 
 
-The analysis will try to prove if there's any correlation between monthly followers of an artist and daily streams. The follower count of an artist does not necessarily mean that all their followers listen to their music; Spotify users that don't follow an artist can listen to their music as well. So, if this is proven to be true, then an artist can focus their efforst on getting more followers so their streams go up and thus their [earnings](https://dittomusic.com/en/blog/how-much-does-spotify-pay-per-stream#:~:text=Spotify%20pays%20artists%20between%20%240.003,holders%20and%2030%25%20to%20Spotify.).
+You may be wondering why the least square lines of this model look as if they're not fitting the data very well. Maybe I did a bad job graphing the model? or maybe the model is not that good? It was interesting to me at first. Considering that we're used to the **simple idea** (see the other tab) that the line should be directly in the middle of the points; I was shocked when I realized that even when these lines look as if they're not fitting the data well enough, they're actually a correct representation of this model.
+
+This is because this model has many dimensions to it. Differently from the simple idea where only two dimensions are considered, here we are looking at 3 and some subgroups that could make it 4 dimensional. Because of this, there is not a "one line fits all scenarios" case in this model, but actually there are infinite least squares lines according to different scenarios. A couple examples are shown in the graph above. The 3 least square lines shown in the graph portray subsets of the data where all time artist streams, and all time streams per song meet their respective quartiles as examples (see graph legend). In other words, what if my artist has "x" amount of followers, and "z" amount of all time streams, and has a song with "q" reproductions. Well there will certainly be a line for that type of artist and if many fall into that category we would be able to predict their daily streams.  
+
+This is a high dimensional regression. The actual model (1st graph) and their near to infinite possible scenarios could be overwhelming to understand, that's why from this point on in this analysis, all details for any scenario being considered will be disclosed in the different tabs of the analysis.
+ 
+This analysis will explain the relationship between artist monthly followers and their daily streams on Spotify, we could estimate their daily revenue as well; Spotify does not share all of its information publicly, (no revenue data) only some variables were available to perform a regression model on this data. This is why more research was needed in order to find variables. By looking up related Spotify data I came across with data that not only had information on how the song was made (duration, decibel levels, etc..), but it also had Monthly followers for more than 3000 artists as well as daily streamings, and other interesting variables which led me to continue an analysis on it.(See model selection tab) 
+
+If the correlation is proven true, then an artist can focus their efforts on getting more followers so their streams go up and thus their [earnings](https://dittomusic.com/en/blog/how-much-does-spotify-pay-per-stream#:~:text=Spotify%20pays%20artists%20between%20%240.003,holders%20and%2030%25%20to%20Spotify.).
 
 Thus, this analysis will consider the next hypothesis:
 
@@ -242,24 +243,22 @@ $$
 H_0: \beta_1 = 0 \\  
 H_a: \beta_1 \neq 0
 \end{array}
-\right\} \ \text{Slope Hypotheses}
+\right\} \ \text{Slope Hypotheses} \\ \text{alpha level:} \ .05
 $$
 
 <br>
 
-The null being zero will help us test the slope of the model against it. IF the slope of this model was zero, then no correlation would be found between these two variables. A T-test will be performed to test for a significant difference between zero and the actual slope of the model. If the results are significant at the $\text{alpha level of .05}$, Then it would be safe to assume that correlation has been found between these two variables and in the model as well.
+The null hypothesis being a slope of zero will help us test if the correlation is non existent. IF the slope of this model was zero, then no correlation would be found between these two variables. A T-test will be performed to test for a significant difference between zero and the actual slope of the model. If the results are significant at the **alpha level of .05**, Then it would be safe to assume that correlation has been found between these two variables and in the model as well.
 
-This is a multiple linear regression. The actual model (1st graph) and their near to infinite possible scenarios are being used; From this point on in this analysis, all details for the scenario being considered will be disclosed in the different tabs of the analysis. 
+Such hypothesis can be tested by using the slope coefficient of the model summary. However, it's crucial to understand that even when there are almost infinite lines in this model, all of them share the same slope. So, for each specific scenario that we try to analyze there will be a single slope (as seen in the first graph). There's only one slope when we test monthly followers as the main predictor because all of these lines are only shifting in their intercepts.
 
-Continuing with the hypothesis, such can be tested by using the slope coefficient of the model summary. However, it's crucial to understand that even when there are almost infinite lines in this model, all of them share the same slope. So, for each specific scenario that we try to analyze there will be a single slope (as seen in the first graph). There's only one slope when we test monthly followers as the main predictor because all of these lines are only shifting in their intercepts.
+There would be different slopes if we tested a null hypothesis on the rest of the variables. Since, Monthly followers is the best predictor in this model, we will stick to it and test the null at the **.05 alpha level.**
 
-There would be different slopes if we tested a null hypothesis on the rest of the variables. Since, Monthly followers is the best predictor in this model, we will stick to it and test the null at the $\text{.05 alpha level}$.
-
-To start the hypothesis testing, a corresponding T value  is needed for the comparison between our selected line slope, and the slope that is being hypothesized which is of 0, meaning no correlation. After that, a P value for the slope in the model can be calculated while is tested against the null hypothesis.
+To start the hypothesis testing, a corresponding T value is needed for the comparison between our selected line slope, and the slope that is being hypothesized which is of 0, meaning no correlation. After that, a P value for the slope in the model can be calculated while is tested against the null hypothesis. For this we will use the artist monthly followers slope.
  
 <br>
  
-```{r hypothesis testing 1, message=FALSE, warning=FALSE, echo=FALSE}
+```{r hypothesis testing 1}
 tvalue <- ((b[3]) - 0)/(0.03272)
 result <- data.frame(a = round(pt(-abs(tvalue), 876 ) * 2, 5), row.names = NULL)
 kable(result, align = "c", col.names = 'P. Value when 0 streams increase per new monthly follower is the null ')
@@ -279,7 +278,7 @@ Keep on reading to see more on how the data was worked up in order to get to the
  
 <br>
  
-```{r graphs simple, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r graphs simple, fig.width=10, fig.width=10, fig.align='center'}
  
 ggplot(dt, aes(y=(daily1), x=(monthly_listeners)))+
   geom_point(show.legend = F, col="orange")+
@@ -306,7 +305,7 @@ ggplot(dt, aes(y=(daily1), x=(monthly_listeners)))+
  
 <br>
 
-While this is not the actual model being used, it gives an idea as to how linear the data is and looks when worked on. But, originally this wasn't the case. A series of transformations where made to get to this point which made the model work better.
+While this is not the actual model being used, it gives an idea of how the model would look like if it was 2D only, it also portrays how linear the data is and looks when transformed with log scales on x and y. However, a better prediction can be achieved when using the rest of the variables shown in the actual model.
 
 <br><br><br><br>
 
@@ -368,7 +367,7 @@ I found many interesting data variables for Spotify, some of them I found in [Ka
 
 <br>
 
-More variables were included in the final data set, and after mutating more were found. By pure logic we can infer that number of followers will be important, as well as number of streams. But to be sure about this, multiple pairs plot were used. Here are a couple of them.
+More variables were included in the final data set, and after deep data analysis more were found. By pure logic we can infer that number of followers will be important, as well as number of streams. But to be sure about this, multiple pairs plot were used. Here are a couple of them.
 
 <br><br><br><br>
  
@@ -388,7 +387,7 @@ Originally, not many correlations were visible. A little on daily and monthly_li
 
 <br>
 
-```{r original pairs plot, fig.width=20, fig.height= 20, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r original pairs plot, fig.width=20, fig.height= 20, fig.align='center'}
 dto <- inner_join(dta, df, by = c("title", "artist"), relationship = "many-to-many") |> 
   mutate(explicit = as.factor(explicit),
          track_genre = as.factor(track_genre)) |> 
@@ -406,7 +405,7 @@ pairs(dto, panel=panel.smooth)
 
 After wrangling the data, and creating new variables such as current_trend, peaked_last_year and others in where I create some on-off switches, as well as multiple categorical variables I got many good insights as to what to do next. This pairs plot helped me view the correlation between daily1 and monthly_listeners and that got me my first raw R^2^ of around .7 Then I tried transforming the data.
 
-```{r alternative pairs plot, fig.width=20, fig.height= 20, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r alternative pairs plot, fig.width=20, fig.height= 20, fig.align='center'}
 dta1 <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|> 
   #filter(popularity > 59) |> 
   rename(title = track_name,
@@ -501,7 +500,7 @@ When considering all this variables in the model its significance got really hig
 
 Other than my alternative model which I added in this html, I could've also analyzed some plots like `loud~energy` `energy~acoustics` `loud-acoustics`. I did not venture into those ones; While I was trying to predict more on a industry level type of scenario probably business related, I cannot deny that these graphs are also useful scenarios because they may increase a song's quality. But that's pay for another check.
 
-```{r, fig.align='center', fig.width=10, message=FALSE, warning=FALSE, echo=FALSE}
+```{r, fig.align='center', fig.width=10}
 dtwhat <- inner_join(dta, df, by = c("title", "artist"), relationship =
   "many-to-many") |> 
   dplyr::select(-track_genre) |> 
@@ -543,7 +542,7 @@ grid.arrange(g11,g22,g33, ncol=3, top = "Other Possible Models")
 
 <br>
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
+```{r}
 datatable(dt)
 ```
 
@@ -560,7 +559,7 @@ datatable(dt)
 
 <br>
 
-```{r raw, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r raw, fig.width=10, fig.width=10, fig.align='center'}
 dt$daily1 <- exp(dt$daily1)
 dt$monthly_listeners <- exp(dt$monthly_listeners)
 
@@ -590,7 +589,7 @@ This is how the data looked like after taking the log of Y.
 
 <br>
 
-```{r y transformed, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r y transformed, fig.width=10, fig.width=10, fig.align='center'}
 dt$daily1 <- log(dt$daily1)
 
 
@@ -618,7 +617,7 @@ This is how the plot looks after a double log.
 
 <br>
 
-```{r final transformed, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r final transformed, fig.width=10, fig.width=10, fig.align='center'}
 
 dt$monthly_listeners <- log(dt$monthly_listeners)
 
@@ -632,7 +631,7 @@ plot(dt$monthly_listeners, dt$daily1, col = "orange", pch = 19, xlab = "Monthly 
 
 <br>
 
-```{r, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r, fig.width=10, fig.width=10, fig.align='center'}
 pander::pander(summary(mylm1))
 ```
 
@@ -654,7 +653,7 @@ Continue to model summary to keep on reading about this model, or read about an 
 
 <br>
 
-```{r alternative model, fig.align='center', fig.width=13.5, message=FALSE, warning=FALSE, echo=FALSE}
+```{r alternative model, fig.align='center', fig.width=13.5}
 dtas <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|>
   filter(popularity > 59) |>
   rename(title = track_name,
@@ -787,11 +786,11 @@ g1 <- ggplot(dtss1, aes((streams),(daily)))+
     y = "") +
 
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 13, color = "grey15"),
+    axis.text.x = element_text(color = "grey35"),
+    axis.text.y = element_text(color = "grey35"),
+    plot.subtitle = element_text(color = "grey25", size = 10),
+    axis.title = element_text(color = "grey15", size = 10))
 
 g2 <- ggplot(dtss2, aes((streams),(daily)))+
    geom_point(show.legend = T, col="#9EA1F9") +
@@ -816,11 +815,11 @@ g2 <- ggplot(dtss2, aes((streams),(daily)))+
      y = "") +
 
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 13, color = "grey15"),
+    axis.text.x = element_text(color = "grey35"),
+    axis.text.y = element_text(color = "grey35"),
+    plot.subtitle = element_text(color = "grey25", size = 10),
+    axis.title = element_text(color = "grey15", size = 10))
 
  ## 3
 
@@ -848,11 +847,11 @@ g3 <- ggplot(dtss3, aes((streams),(daily)))+
      y = "") +
 
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 13, color = "grey15"),
+    axis.text.x = element_text(color = "grey35"),
+    axis.text.y = element_text(color = "grey35"),
+    plot.subtitle = element_text(color = "grey25", size = 10),
+    axis.title = element_text(color = "grey15", size = 10))
  
  grid.arrange(g1, g2, g3,
               ncol = 3,
@@ -862,6 +861,10 @@ g3 <- ggplot(dtss3, aes((streams),(daily)))+
               )
 
 ```
+
+<br>
+
+$$\text{Math equation:} \\\ \\ \text{Song daily streams} = \text{Popularity} + \text{monthly listeners} \\ + \text{months since peak} \\ + \text{Popular artist influence} \times \text{Current trend} \\ + \text{popularity} \times \text{genre} \\ + \text{All time streams} \times \text{words} \\ + \text{All time streams} \times \text{popular artist} \\ + \text{All time streams} \times \text{Current trend} \times \text{Peak last year} $$
 
 <br>
 
@@ -877,7 +880,7 @@ Popularity had a big role in this model, Spotify offers an expert rating on song
 
 <br>
 
-```{r popularity segregation, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r popularity segregation, fig.align='center'}
 
 dtag <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|>
   #filter(popularity > 59) |>
@@ -979,13 +982,13 @@ ggplot(dtssg, aes((popularity),(daily)))+
 
 <br>
 
-Above is what the pair of daily ~ popularity looks like whe is plotted. I spent a while considering why there was a big leap on popularity from 20 to around 60. I found that many songs were duplicated. The way they were duplicated is that they had two versions (example, November Rain (original), November Rain (Remastered)). It was the case that the secondary versions of those duplciated songs where in the lower popularity groups. And since the information I have is considering only the most popular songs and artists for the last 10 years, I shouldn't be considering duplicates nor unpopular music. 
+Above is what the pair of daily ~ popularity looks like when plotted. I spent a while considering why there was a big leap on popularity from 20 to around 60. I found that many songs were duplicated. The way they were duplicated is that they had two versions (example, November Rain (original), November Rain (Remastered)). It was the case that the secondary versions of those duplicated songs where in the lower popularity groups. And since the information I have is considering only the most popular songs and artists for the last 10 years, I shouldn't be considering duplicates nor unpopular music. 
 
 So I filtered songs that are popular above 60, which is were a normal trend is on sight. I focused on the popular songs because it's I found all of their information without NAs, However in my main model, I consider all of them without filters.
 
 After filtering the daily~streams plot looked like this. This is colored by popularity group, where popularity 1 are the most popular songs and 3 the lowest. This is considering that they are all popular songs overall compared to the whole industry. And on the previous tab you can see how it looks like with a couple representations of my model with the popularity groups segregated.
 
-```{r, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r, fig.align='center'}
 asd <- read_csv("https://github.com/Tonadeleon/Regression-Projects/raw/main/Datasets/dataset.csv")|>
   filter(popularity > 59) |>
   rename(title = track_name,
@@ -1065,11 +1068,11 @@ ggplot(asdf, aes((streams),(daily), col=as.factor(popularity0)))+
     col = "Popularity groups") +
 
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 13, color = "grey15"),
+    axis.text.x = element_text(color = "grey35"),
+    axis.text.y = element_text(color = "grey35"),
+    plot.subtitle = element_text(color = "grey25", size = 10),
+    axis.title = element_text(color = "grey15", size = 10))
 
 ```
 
@@ -1118,7 +1121,7 @@ This analysis, even when having a lower R^2^ was a little more involved when con
 
 <br>
 
-When considering all this variables in the model its significance got better a little by little. This model wasn't making much sense to me, but I worked on it so I figured that I could share it. And disregarding that, good insights can be made from this, such as what genres are the most popular ones today, as well as the importance of the amounts of words in a song, "less words being prefered by the current consumers". Also, songs that peaked one year ago or more start to lose popularity rather fast, most songs now are short lived instead of being classic "legend songs", this can lead to consumers wanting more songs, and too many being created that they are lesser in quality throughout generations.
+When considering all this variables in the model, its significance got better little by little. This model wasn't making much sense to me, but I worked on it so I figured that I could share it. And disregarding that, good insights can be made from this, such as what genres are the most popular ones today, as well as the importance of the amounts of words in a song, "less words being prefered by the current consumers". Also, songs that peaked one year ago or more start to lose popularity rather fast, most songs now are short lived instead of being classic "legend songs", this can lead to consumers wanting more songs, and too many being created that they are lesser in quality throughout generations.
  
 <br><br><br><br>
  
@@ -1126,17 +1129,13 @@ When considering all this variables in the model its significance got better a l
 
 <br>
 
-
-$$\text{Math equation and model summary:} \\\ \\ \text{Song daily streams} = \text{Popularity} + \text{monthly listeners} \\ + \text{months since peak} \\ + \text{Popular artist influence} \times \text{Current trend} \\ + \text{popularity} \times \text{genre} \\ + \text{All time streams} \times \text{words} \\ + \text{All time streams} \times \text{popular artist} \\ + \text{All time streams} \times \text{Current trend} \times \text{Peak last year} $$
-<br>
-
-```{r lms summary, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r lms summary, fig.width=10, fig.width=10, fig.align='center'}
 pander::pander(summary(mylms))
 ```
 
 <br>
 
-This model's summary looks decent for not 100% correlated variables. R^2^ of .69, and all significant values can help explain 69% of the variance in this relationship between all time streams and daily streams.
+This model's summary looks decent for not 100% correlated variables. R^2^ of .62, and all significant values can help explain 62% of the variance in this relationship between all time streams and daily streams.
  
 <br><br><br><br>
  
@@ -1144,7 +1143,7 @@ This model's summary looks decent for not 100% correlated variables. R^2^ of .69
  
 <br>
  
-```{r alternative diagnostic, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r alternative diagnostic, fig.width=10, fig.width=10, fig.align='center'}
 par(mfrow=c(1,3))
 plot(mylms,which=1:2)
 plot(mylms$residuals)
@@ -1152,7 +1151,7 @@ plot(mylms$residuals)
  
 <br>
  
-Diagnostics look good, only problem to appear to be present is a little of right skewness.
+Diagnostics look good, only problem to appear to be presence is a little of right skewness.
  
 <br><br><br><br>
  
@@ -1160,11 +1159,11 @@ Diagnostics look good, only problem to appear to be present is a little of right
  
 <br>
 
-```{r alternative validation, message=FALSE, warning=FALSE, echo=FALSE}
+```{r alternative validation}
 
-set.seed(1)
+set.seed(4)
  
-num_rows <- 275 #330 total
+num_rows <- 250 #330 total
 keep <- sample(1:nrow(dtss), num_rows)
  
 mytrain <- dtss[keep, ]
@@ -1229,7 +1228,7 @@ knitr::kable(my_output_table2, escape=TRUE, digits=5)
 
 <br>
 
-Validations look decent in this model. Only problem I see is that the validation results have a lot of variance. Whereas in my actual model they're always close to .94 R^2^
+Validations look decent in this model. Only problem I see is that the validation results have a lot of variance. Whereas in my actual model they're always close to .93 R^2^
  
 <br><br><br><br>
  
@@ -1241,7 +1240,7 @@ Validations look decent in this model. Only problem I see is that the validation
 
 <br>
  
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
+```{r}
 pander::pander(summary(mylm))
 ```
 
@@ -1259,7 +1258,7 @@ This model abilitates the user to test the assumption of streams increase per fo
  
 <br>
  
-```{r original diagnostic, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r original diagnostic, fig.width=10, fig.width=10, fig.align='center'}
 par(mfrow=c(1,3))
 plot(mylm,which=1:2)
 plot(mylm$residuals)
@@ -1267,7 +1266,7 @@ plot(mylm$residuals)
 
 <br>
  
-All diagnostics look good. Normality may appear to be right skewed on the residuals; another curious thing is that the residual vs fitted plot shows some linear patterns, it is uncertain if this is is a concern for the model, and being that theres's a large sample size of almost a thousand unique songs an artists, we will proceed with the analysis. 
+All diagnostics look good. Normality may appear to be right skewed on the residuals; another curious thing is that the residual vs fitted plot shows some linear patterns, it is uncertain if this is is a concern for the model, the reason behind it maybe that some artists have a couple different songs in this set; and being that there's a large sample size of almost a thousand unique songs an artists, we will proceed with the analysis. 
  
 <br><br><br><br>
  
@@ -1289,7 +1288,7 @@ Here are a couple examples on how to interpret this model, and how to think abou
 
 <br>
 
-```{r pred 1 graph, fig.align='center', fig.width=10, message=FALSE, warning=FALSE, echo=FALSE}
+```{r pred 1 graph, fig.align='center', fig.width=10}
 
 average_monthly_followers <- mean(dt$monthly_listeners)
 mean_artist_streams <- mean(dt$artist_streams)
@@ -1351,26 +1350,32 @@ ggplot(dt, aes(y = daily1, x = monthly_listeners)) +
   
   geom_point(aes(x = average_monthly_followers, y = Prediction), color = "red", size = 3) +
   
+  geom_label(aes(x = x, y = Prediction2, label = "Prediction 2"), 
+             color = "grey15", fill = "white", hjust = -0.1, vjust = -0.5) +
+  
+  geom_label(aes(x = average_monthly_followers, y = Prediction, label = "Prediction 1"), 
+             color = "grey15", fill = "white", hjust = -0.1, vjust = -0.5) +
+  
   scale_x_continuous(breaks = log(c(4500000, 10000000, 25000000, 50000000, 100000000)), labels = c("4.5 M", "10 M", "25 M", "50 M", "100 M")) +
   scale_y_continuous(breaks = c(log(.5), log(1.5), log(6), log(20), log(70)), labels=c(".5 M","1.5 M","6 M","20 M" ,"70 M"))+
   theme_classic() +
   labs(title = "Artist Monthly Followers vs. Artist Daily Streams",
-       subtitle = "Pred1: All variable mean values in play \nPred 2: All variable mean values in play, 50 Mill followers",
+       subtitle = "Pred1: All variable mean values in play \nPred 2: All variable mean values in play, but 50 M followers instead of the average 24 M",
        x = "Artist Monthly Followers",
        y = "Artist Daily Streams",
        caption = "Log Scale") +
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 14, color = "grey15"),
+    axis.text.x = element_text(color = "grey35", size=10),
+    axis.text.y = element_text(color = "grey35", size=10),
+    plot.subtitle = element_text(color = "grey25", size = 11),
+    axis.title = element_text(color = "grey15", size = 12))
 
 ```
 
 <br>
 
-```{r pred 1, message=FALSE, warning=FALSE, echo=FALSE }
+```{r pred 1 }
 
 prediction_df <- data.frame(
   "Name" = c("Prediction 1", "Prediction 2"),
@@ -1398,7 +1403,7 @@ The results are in the table above where the numbers are rounded to 1 decimal fo
 
 If I predict for rather 50 Million followers (dark blue Prediction) instead of the average. The prediction follows the same trend. Be assured that when choosing your specifics for each variable, the predictions will follow the same line even when the x values are changed.
 
-We can say that the slope of this line is of **`r exp(b[3])`**, this means that for every follower gained in a month, we can expect around 2 additional streams. And, to be 95% certain that this prediction is accurate, the prediction interval is added and is quite large, but at the same time not too large.
+We can say that the slope of this line is of **`r exp(b[3])`**, this means that for every follower gained in a month, we can expect around 2 additional streams. And, to be 95% certain that this prediction is accurate, the prediction interval is added. This means that we are 95% sure that for every new follower, the artist will have between 5 and 8 extra streams.
  
 <br><br><br><br>
 
@@ -1406,7 +1411,7 @@ We can say that the slope of this line is of **`r exp(b[3])`**, this means that 
 
 <br>
 
-```{r, fig.align='center', fig.width=10, message=FALSE, warning=FALSE, echo=FALSE}
+```{r, fig.align='center', fig.width=10}
 
 get_prediction_intervals <- function(model, data) {
 
@@ -1470,17 +1475,17 @@ ggplot(dt123, aes(x = monthly_listeners, y = daily1)) +
     y = "Artist Daily Streams",
     caption = "Log scale") +
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 14, color = "grey15"),
+    axis.text.x = element_text(color = "grey35", size=10),
+    axis.text.y = element_text(color = "grey35", size=10),
+    plot.subtitle = element_text(color = "grey25", size = 11),
+    axis.title = element_text(color = "grey15", size = 12))
  
 ```
 
 <br>
 
-Consider this graph to be a 2d representation of a higher dimensional model's confidence interval. You can see a ribbon representing a confidence interval for this situation. This confidence interval takes place when the mean of all other variables is used to get predictions; In reality, there is not a "one single confidence interval fits all lines" situation, but a confidence interval for each line; The lines then would go in the middle of each of those confidence intervals. However since the amount of lines is near to infinite, it suficeths to show one for the purpose of this analysis, still we should remember this is not the only confidence interval in existence.
+Consider this graph to be a 2D representation of a higher dimensional model's confidence interval. You can see a ribbon representing a confidence interval for this situation. This confidence interval takes place when the mean of all other variables is used to get predictions; In reality, there is not a "one single confidence interval fits all lines" situation, but a confidence interval for each line; The lines then would go in the middle of each of those confidence intervals. However since the amount of lines is near to infinite, it suffices to show one for the purpose of this analysis, still we should remember this is not the only confidence interval in existence.
 
 This is an understandable representation because if this graphing tool were to graph every ribbon of every line (If it had the capacity to do so all at once), the plot would then be filled with infinite ribbons for all the lines that this model could portray; and almost all the area where the dots are (and even possibly the whole plot) would be filled with confidence interval ribbons. 
 
@@ -1492,7 +1497,7 @@ This would also be a good thing, it means that most data points can be explained
 
 <br>
 
-```{r, fig.width=10, fig.width=10, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r, fig.width=10, fig.width=10, fig.align='center'}
 
 ggplot(dt, aes(y=(daily1), x=(artist_streams)))+
   geom_point(show.legend = F, col="firebrick")+
@@ -1508,11 +1513,11 @@ ggplot(dt, aes(y=(daily1), x=(artist_streams)))+
     x= "Total artist streams (Spotify)",
     y = "Artist Daily Streams") +
   theme(
-    plot.title = element_text(size = 13, color = "grey30"),
-    axis.text.x = element_text(color = "grey45"),
-    axis.text.y = element_text(color = "grey45"),
-    plot.subtitle = element_text(color = "grey35", size = 10),
-    axis.title = element_text(color = "grey35", size = 10))
+    plot.title = element_text(size = 14, color = "grey15"),
+    axis.text.x = element_text(color = "grey35", size=10),
+    axis.text.y = element_text(color = "grey35", size=10),
+    plot.subtitle = element_text(color = "grey25", size = 11),
+    axis.title = element_text(color = "grey15", size = 12))
 
 ```
 
@@ -1528,11 +1533,11 @@ As seen here, total artist streams (All time) is also a good predictor of daily 
 
 <br>
  
-```{r original validation?, message=FALSE, warning=FALSE, echo=FALSE}
+```{r original validation?}
 
-set.seed(1)
+set.seed(17)
  
-num_rows <- 250 #882 total
+num_rows <- 440 #882 total
 keep <- sample(1:nrow(dt), num_rows)
  
 mytrain <- dt[keep, ]
@@ -1547,9 +1552,7 @@ mylm <- lm((daily1) ~
              
              (artist_streams) + 
              
-             (streams) + 
-             
-             daily 
+             (streams)
 , mytrain)
  
 mytest <- dt[-keep, ] #Use this in the predict(..., newdata=mytest)
@@ -1586,11 +1589,12 @@ colnames(my_output_table2) <- c(
   "Validation Adj. $R^2$")
  
 knitr::kable(my_output_table2, escape=TRUE, digits=5)
+
 ```
 
 <br>
 
-Validations are satisfying. Even when using a sample size less than half of the original the R^2^ coefficient remained true to the model. This adds more assurance the the model is good for describing why the estimation of daily artists' streams in Spotify are this way. We could use the streaming results of this model to estimate how much an artist makes if we wanted to. However, spotify doesn't share this data and would be interesting to see the actual correlation between this variables and their revenue.
+Validations are satisfying. Even when using a sample size less than half of the original, the R^2^ coefficient remained true to the model. This assures that the model is good for describing the estimation of daily artists' streams in Spotify. We could use the streaming results of this model to estimate how much an artist makes if we wanted to. The use cases of this model are many, and can be proven useful for artists when planning ahead and focusing efforts on some specific marketing task.
 
 <br><br><br><br>
 

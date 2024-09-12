@@ -7,13 +7,13 @@ Here is a summary of each one of the analyses posted in this repo:
 
 1.- [Spotify Regression](https://spotify-regression.netlify.app/):
         My Favorite project. I worked with raw data gathered from Spotify's API to make a significant regression model that predicts an Artist         daily Streams (Leading to daily earnings) with multiple variables. Validated with 93% confidence R^2
-        
-2.- [House Prices](https://selling-houses-regression.netlify.app/):
-        Awesome Project. Huge Data set to be found in Kaggle. Managed to get a 95% confidence R^2 in my test data. This while keeping                  interpretability intact. Multiple variables and explanations in file.
 
-3.- [Car Analysis](https://zesty-kheer-8ce4a9.netlify.app):
+2.- [Car Analysis](https://selling-my-car-regression.netlify.app/):
         Interesting Project. I gathered all data for this analysis from multiple sources online (Multiple Car Dealership websites)
         After Gathering almost 100 different prices for different car mileage. I'm able to predict with 90% accuracy for how much I'll be able         to sell my car for when it reaches 220k miles. (All else held constant)
+        
+3.- [House Prices](https://selling-houses-regression.netlify.app/):
+        Awesome Project. Huge Data set to be found in Kaggle. Managed to get a 95% confidence R^2 in my test data. This while keeping                  interpretability intact. Multiple variables and explanations in file.
 
 4.- [Midterm prediction](https://polite-kringle-2be27c.netlify.app):
         School Project. Predict with my midterm grade, my final exam grade by using past grades for a variety of years for this class.
